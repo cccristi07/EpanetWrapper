@@ -70,17 +70,33 @@ class ENWrapper:
 
     def get_count(self, type):
 
-        x = ctypes.c_int(0)
-        x = ctypes.pointer(x)
-        err_code = self.lib.ENgetcount(type, x)
+        ptr = ENWrapper._cptr()
+        err_code = self.lib.ENgetcount(type, ptr)
 
         if err_code == 0:
             print("Succes")
         else:
             print("Error performing querry! - {}".format(err_code))
 
-        return x.contents.value
+        return ENWrapper._getval(ptr)
 
+    @staticmethod
+    def _cptr():
+        """
+        todo - make it compatible with other types
+        :return: function that returns a C pointer used for argument retrieval
+        """
+
+        return ctypes.pointer(ctypes.c_int(0))
+
+    @staticmethod
+    def _getval(c_ptr):
+        """
+
+        :return: value of a c_ptr
+        """
+
+        return c_ptr.contents.value
     @staticmethod
     def _check_errcode(code):
         if code == 0:
@@ -96,5 +112,7 @@ if __name__ == '__main__':
 
     net = ENWrapper('win/64/epanet2.dll', 'hanoi.inp', 'log', 'bin')
     nodes = net.get_count(CountType.EN_NODECOUNT)
+    tanks = net.get_count(CountType.EN_TANKCOUNT)
 
-    print("Number of Tanks is ",  nodes)
+    print("Number of Nodes is ", nodes)
+    print("Number of Tanks is ", tanks)
