@@ -1,0 +1,9 @@
+# all .pyc files
+*.pyc
+
+# pycharm related folders
+.idea
+.ipynb_checkpoints
+
+
+
