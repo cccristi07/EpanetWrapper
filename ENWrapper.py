@@ -113,7 +113,6 @@ class ENWrapper:
     def _cstring_convert(string):
         return ctypes.c_char_p(string.encode('utf-8'))
 
-
 # we are extending the EPANetSimulation class to ease acces to
 # simulation routines
 class EPANetSimulation(EPANetSimulation):
@@ -185,7 +184,6 @@ class EPANetSimulation(EPANetSimulation):
 
         return link_values
 
-
     def query_network(self, sim_dict, ret_type="JSON"):
         '''
         :param sim_dict: a dict containing info about the network
@@ -236,7 +234,6 @@ class EPANetSimulation(EPANetSimulation):
         except:
             simulations = False
 
-
         if simulations:
             node_values = []
             link_values = []
@@ -255,7 +252,6 @@ class EPANetSimulation(EPANetSimulation):
                 # reset emitter values everywhere in network
                 self.set_emitters()
 
-
         else:
 
             if node_query:
@@ -268,11 +264,8 @@ class EPANetSimulation(EPANetSimulation):
             else:
                 link_values = []
 
-
-
         self.ENcloseH()
         self.ENclose()
-
 
         return {
             "NODE_VALUES": node_values,
@@ -280,11 +273,7 @@ class EPANetSimulation(EPANetSimulation):
         }
 
 
-
 if __name__ == '__main__':
-
-
-
 
     from epanettools import epanettools as et
 
@@ -306,8 +295,6 @@ if __name__ == '__main__':
 
     simulations = es.query_network(query_dict)
     import pprint
-
-
 
     pressures = simulations["NODE_VALUES"]
 
