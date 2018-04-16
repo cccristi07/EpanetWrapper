@@ -115,9 +115,12 @@ class ENWrapper:
 
 # we are extending the EPANetSimulation class to ease acces to
 # simulation routines
-class EPANetSimulation(EPANetSimulation):
+class ENSim(EPANetSimulation):
 
     EN_REINIT = 10
+
+    def __init__(self, inputFileName, pdd=False):
+        super().__init__(inputFileName, pdd)
 
     def set_emitter(self, node_index, emitter_val):
         self.ENsetnodevalue(node_index, EN_EMITTER, emitter_val)
@@ -146,7 +149,7 @@ class EPANetSimulation(EPANetSimulation):
 
         # initialize network for hydraulic process
 
-        self.ENinitH(EPANetSimulation.EN_REINIT)
+        self.ENinitH(ENSim.EN_REINIT)
 
         while t_step > 0:
 
@@ -209,7 +212,7 @@ class EPANetSimulation(EPANetSimulation):
         self.ENopenH()
 
         # initialize session
-        self.ENinitH(EPANetSimulation.EN_REINIT)
+        self.ENinitH(ENSim.EN_REINIT)
 
 
         # check json for querried data
@@ -277,7 +280,7 @@ if __name__ == '__main__':
 
     from epanettools import epanettools as et
 
-    es = EPANetSimulation("hanoi.inp")
+    es = ENSim("hanoi.inp")
 
 
     query_dict = {
