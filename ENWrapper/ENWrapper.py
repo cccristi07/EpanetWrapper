@@ -162,6 +162,8 @@ class ENSim(EPANetSimulation):
 
             t_step = self.ENnextH()
             t_step = t_step[1]
+        for key in node_values:
+            node_values[key] = np.transpose(node_values[key])
 
         return node_values
 
@@ -184,6 +186,9 @@ class ENSim(EPANetSimulation):
 
             t_step = self.ENnextH()
             t_step = t_step[1]
+
+        for key in link_values:
+            link_values[key] = np.transpose(link_values[key])
 
         return link_values
 
@@ -280,7 +285,7 @@ if __name__ == '__main__':
 
     es = ENSim("ENWrapper/data/hanoi.inp")
 
-    emitters = [(5, -10), (5, 0), (5, 33)]
+    emitters = [(5, 0), (5, 30), (12, 760)]
 
     query_dict = {
         "simulation_name": "name",
@@ -291,21 +296,19 @@ if __name__ == '__main__':
         "query": {
 
             "nodes": ["EN_PRESSURE", "EN_DEMAND"],
+            "links": ["EN_VELOCITY"]
         }
 
     }
 
     simulations = es.query_network(query_dict)
 
-    values = simulations["NODE_VALUES"]
+    values = simulations["LINK_VALUES"]
 
-    import pprint
-
-    pprint.pprint(simulations)
 
     for i,vals in enumerate(values):
         plt.figure()
-        plt.plot(vals["EN_PRESSURE"])
-        plt.title("Demand = {}".format(emitters[i]))
+        plt.plot(vals["EN_VELOCITY"])
+        plt.title("VELOCITY = {}".format(emitters[i]))
 
     plt.show()
