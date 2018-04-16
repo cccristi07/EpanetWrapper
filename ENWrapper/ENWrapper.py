@@ -4,6 +4,7 @@ from epanettools.epanettools import *
 from epanettools import pdd
 from epanettools.epanet2 import *
 import numpy as np
+import json
 
 class NodeProperty:
     EN_ELEVATION = 0
@@ -163,7 +164,7 @@ class ENSim(EPANetSimulation):
             t_step = self.ENnextH()
             t_step = t_step[1]
         for key in node_values:
-            node_values[key] = np.transpose(node_values[key])
+            node_values[key] = np.transpose(node_values[key]).tolist()
 
         return node_values
 
@@ -188,11 +189,11 @@ class ENSim(EPANetSimulation):
             t_step = t_step[1]
 
         for key in link_values:
-            link_values[key] = np.transpose(link_values[key])
+            link_values[key] = np.transpose(link_values[key]).tolist()
 
         return link_values
 
-    def query_network(self, sim_dict, ret_type="JSON"):
+    def query_network(self, sim_dict):
         '''
         :param sim_dict: a dict containing info about the network
         has the form
@@ -207,8 +208,7 @@ class ENSim(EPANetSimulation):
                 ]
             }
         }
-        :param ret_type: JSON or numpy array
-        :return:
+        :return: JSON with required data
         '''
 
         # for the moment i'll treat only hydraulic simulations :)
@@ -312,3 +312,8 @@ if __name__ == '__main__':
         plt.title("VELOCITY = {}".format(emitters[i]))
 
     plt.show()
+
+    str = json.dumps(simulations)
+
+    with open("data.json","wt") as f:
+        f.write(str)
