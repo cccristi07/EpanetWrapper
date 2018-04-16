@@ -117,7 +117,7 @@ class ENWrapper:
 # simulation routines
 class ENSim(EPANetSimulation):
 
-    EN_REINIT = 10
+    EN_INIT = 10
 
     def __init__(self, inputFileName, pdd=False):
         super().__init__(inputFileName, pdd)
@@ -149,7 +149,7 @@ class ENSim(EPANetSimulation):
 
         # initialize network for hydraulic process
 
-        self.ENinitH(ENSim.EN_REINIT)
+        self.ENinitH(ENSim.EN_INIT)
 
         while t_step > 0:
 
@@ -212,7 +212,7 @@ class ENSim(EPANetSimulation):
         self.ENopenH()
 
         # initialize session
-        self.ENinitH(ENSim.EN_REINIT)
+        self.ENinitH(ENSim.EN_INIT)
 
 
         # check json for querried data
@@ -278,31 +278,34 @@ class ENSim(EPANetSimulation):
 
 if __name__ == '__main__':
 
-    from epanettools import epanettools as et
+    es = ENSim("ENWrapper/data/hanoi.inp")
 
-    es = ENSim("hanoi.inp")
-
+    emitters = [(5, -10), (5, 0), (5, 33)]
 
     query_dict = {
         "simulation_name": "name",
 
         "simulation_type": "H",
-        "emitter_values" : [(5,0), (5,500)],
+        "emitter_values" : emitters,
 
         "query": {
 
-            "nodes": ["EN_PRESSURE"],
+            "nodes": ["EN_PRESSURE", "EN_DEMAND"],
         }
 
     }
 
     simulations = es.query_network(query_dict)
+
+    values = simulations["NODE_VALUES"]
+
     import pprint
 
-    pressures = simulations["NODE_VALUES"]
+    pprint.pprint(simulations)
 
-    for p in pressures:
-        plt.plot(p["EN_PRESSURE"])
+    for i,vals in enumerate(values):
+        plt.figure()
+        plt.plot(vals["EN_PRESSURE"])
+        plt.title("Demand = {}".format(emitters[i]))
 
     plt.show()
-

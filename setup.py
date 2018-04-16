@@ -7,5 +7,12 @@ setup(name='EpanetWrapper',
       author='Cristian Cazan',
       author_email='cccristi07@gmail.com',
       license='MIT',
-      packages=['EN'],
-      zip_safe=False)
+      packages=['ENWrapper'],
+      zip_safe=False,
+      install_requires=[
+          "numpy",
+          "matplotlib",
+          "ctypes"
+      ]
+
+      )
