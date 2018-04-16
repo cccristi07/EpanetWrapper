@@ -126,6 +126,7 @@ class EPANetSimulation(EPANetSimulation):
         {
             simulation_name : "name",
             simulation_type: "H" or "Q"
+            emitter_values : [ vector with length of nodes ]
             query_data : {
 
                 nodes : [ "EN_PRESSURE"
@@ -151,12 +152,12 @@ class EPANetSimulation(EPANetSimulation):
 
 
         # get info about the network
-        no_nodes = len(self.network.nodes)
+        no_nodes = self.ENgetcount(EN_NODECOUNT)[1] - self.ENgetcount(EN_TANKCOUNT)[1]
         no_links = len(self.network.links)
 
+        print(no_links)
+
         # check json for querried data
-
-
 
         try:
             if query["query_data"]["nodes"]:
@@ -172,7 +173,7 @@ class EPANetSimulation(EPANetSimulation):
             if query["query_data"]["links"]:
                 link_values = {}
                 for info_type in query["query_data"]["links"]:
-                    link_values[info_type] = [[] for _ in range(no_nodes)]
+                    link_values[info_type] = [[] for _ in range(no_links)]
         except:
             link_values = False
 
@@ -195,7 +196,7 @@ class EPANetSimulation(EPANetSimulation):
 
 
             if link_values:
-                for link_index in range(no_nodes):
+                for link_index in range(no_links):
                     for info_type in query["query_data"]["links"]:
                         ret_val = self.ENgetnodevalue(link_index, eval(info_type))
                         ret_val = ret_val[1]
@@ -205,6 +206,8 @@ class EPANetSimulation(EPANetSimulation):
             t_step = t_step[1]
 
 
+        self.ENcloseH()
+        self.ENclose()
 
 
         return {
