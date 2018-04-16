@@ -1,4 +1,9 @@
 import ctypes
+import matplotlib.pyplot as plt
+from epanettools.epanettools import *
+from epanettools import pdd
+from epanettools.epanet2 import *
+import numpy as np
 
 class NodeProperty:
     EN_ELEVATION = 0
@@ -81,7 +86,7 @@ class ENWrapper:
         return ENWrapper._getval(ptr)
 
     @staticmethod
-    def _cptr():
+    def _c_ptr():
         """
         todo - make it compatible with other types
         :return: function that returns a C pointer used for argument retrieval
@@ -108,11 +113,132 @@ class ENWrapper:
     def _cstring_convert(string):
         return ctypes.c_char_p(string.encode('utf-8'))
 
+
+# we are extending the EPANetSimulation class to ease acces to
+# simulation routines
+class EPANetSimulation(EPANetSimulation):
+
+    def query_network(self, query, ret_type="JSON"):
+        """
+
+        :param query: a dict containing info about the network
+        has the form
+        {
+            simulation_name : "name",
+            simulation_type: "H" or "Q"
+            query_data : {
+
+                nodes : [ "EN_PRESSURE"
+                ]
+
+                links : [ "EN_VELOCITY"
+                ]
+
+            }
+
+        }
+        :param ret_type: JSON or numpy array
+        :return:
+        """
+
+        # for the moment i'll treat only hydraulic simulations :)
+
+        # initialize network simulaton
+        self.ENopenH()
+
+        # initialize session
+        self.ENinitH(10)
+
+
+        # get info about the network
+        no_nodes = len(self.network.nodes)
+        no_links = len(self.network.links)
+
+        # check json for querried data
+
+
+
+        try:
+            if query["query_data"]["nodes"]:
+                node_values = {}
+                for info_type in query["query_data"]["nodes"]:
+                    node_values[info_type] = [[] for _ in range(no_nodes)]
+
+        except:
+            node_values = False
+
+
+        try:
+            if query["query_data"]["links"]:
+                link_values = {}
+                for info_type in query["query_data"]["links"]:
+                    link_values[info_type] = [[] for _ in range(no_nodes)]
+        except:
+            link_values = False
+
+
+
+        # time step
+
+        t_step = 1
+
+        while t_step > 0:
+
+            self.ENrunH()
+
+            if node_values:
+                for node_index in range(no_nodes):
+                    for info_type in query["query_data"]["nodes"]:
+                        ret_val = self.ENgetnodevalue(node_index, eval(info_type))
+                        ret_val = ret_val[1]
+                        node_values[info_type][node_index].append(ret_val)
+
+
+            if link_values:
+                for link_index in range(no_nodes):
+                    for info_type in query["query_data"]["links"]:
+                        ret_val = self.ENgetnodevalue(link_index, eval(info_type))
+                        ret_val = ret_val[1]
+                        link_values[info_type][link_index].append(ret_val)
+
+            t_step = self.ENnextH()
+            t_step = t_step[1]
+
+
+
+
+        return {
+            "NODE_VALUES": node_values,
+            "LINK_VALUES": link_values
+        }
+
+
+
 if __name__ == '__main__':
 
-    net = ENWrapper('win/64/epanet2.dll', 'hanoi.inp', 'log', 'bin')
-    nodes = net.get_count(CountType.EN_NODECOUNT)
-    tanks = net.get_count(CountType.EN_TANKCOUNT)
 
-    print("Number of Nodes is ", nodes)
-    print("Number of Tanks is ", tanks)
+
+
+    from epanettools import epanettools as et
+
+    es = EPANetSimulation("hanoi.inp")
+
+
+    query_dict = {
+        "simulation_name": "name",
+
+        "simulation_type": "H",
+
+        "query_data": {
+
+            "nodes": ["EN_PRESSURE", "EN_DEMAND"],
+
+            "links": ["EN_VELOCITY"]
+
+        }
+
+    }
+    ret_val = es.query_network(query_dict)
+    import pprint
+
+    pprint.pprint(ret_val)
