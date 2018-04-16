@@ -118,29 +118,92 @@ class ENWrapper:
 # simulation routines
 class EPANetSimulation(EPANetSimulation):
 
-    def query_network(self, query, ret_type="JSON"):
-        """
+    EN_REINIT = 10
 
-        :param query: a dict containing info about the network
+    def set_emitter(self, node_index, emitter_val):
+        self.ENsetnodevalue(node_index, EN_EMITTER, emitter_val)
+
+
+    def set_emitters(self, emitter_info=None):
+
+        if emitter_info is None:
+            # if arg is none reset emitter values
+            for node_index in self.network.nodes:
+                self.ENsetnodevalue(node_index, EN_EMITTER, 0)
+        else:
+
+            for node_index, emitter_val in emitter_info:
+                self.set_emitter(node_index, emitter_val)
+
+    def get_nodes_data(self, data_query):
+
+        no_nodes = self.ENgetcount(EN_NODECOUNT)[1] - self.ENgetcount(EN_TANKCOUNT)[1]
+        t_step = 1
+        node_values = {}
+
+
+        for queries in data_query:
+            node_values[queries] = [[] for _ in range(no_nodes)]
+
+        # initialize network for hydraulic process
+
+        self.ENinitH(EPANetSimulation.EN_REINIT)
+
+        while t_step > 0:
+
+            self.ENrunH()
+
+            for node_index in range(1, no_nodes + 1):
+                for query_type in data_query:
+                    ret_val = self.ENgetnodevalue(node_index, eval(query_type))[1]
+                    node_values[query_type][node_index-1].append(ret_val)
+
+            t_step = self.ENnextH()
+            t_step = t_step[1]
+
+        return node_values
+
+    def get_links_data(self, data_query):
+
+        no_links = self.ENgetcount(EN_LINKCOUNT)[1]
+        t_step = 1
+        link_values = {}
+
+        for queries in data_query:
+            link_values[queries] = [[] for _ in range(no_links)]
+
+        while t_step > 0:
+            self.ENrunH()
+
+            for link_index in range(1, no_links + 1):
+                for query_type in data_query:
+                    ret_val = self.ENgetnodevalue(link_index, eval(query_type))[1]
+                    link_values[query_type][link_index-1].append(ret_val)
+
+            t_step = self.ENnextH()
+            t_step = t_step[1]
+
+        return link_values
+
+
+    def query_network(self, sim_dict, ret_type="JSON"):
+        '''
+        :param sim_dict: a dict containing info about the network
         has the form
         {
             simulation_name : "name",
             simulation_type: "H" or "Q"
-            emitter_values : [ vector with length of nodes ]
-            query_data : {
-
+            emitter_values : [ (node_index, emitter_value) ]
+            query : {
                 nodes : [ "EN_PRESSURE"
                 ]
-
                 links : [ "EN_VELOCITY"
                 ]
-
             }
-
         }
         :param ret_type: JSON or numpy array
         :return:
-        """
+        '''
 
         # for the moment i'll treat only hydraulic simulations :)
 
@@ -148,62 +211,63 @@ class EPANetSimulation(EPANetSimulation):
         self.ENopenH()
 
         # initialize session
-        self.ENinitH(10)
+        self.ENinitH(EPANetSimulation.EN_REINIT)
 
-
-        # get info about the network
-        no_nodes = self.ENgetcount(EN_NODECOUNT)[1] - self.ENgetcount(EN_TANKCOUNT)[1]
-        no_links = len(self.network.links)
-
-        print(no_links)
 
         # check json for querried data
 
+        # node info:
         try:
-            if query["query_data"]["nodes"]:
-                node_values = {}
-                for info_type in query["query_data"]["nodes"]:
-                    node_values[info_type] = [[] for _ in range(no_nodes)]
-
+            if sim_dict["query"]["nodes"]:
+                node_query = True
         except:
-            node_values = False
+            node_query = False
 
-
+        # link info
         try:
-            if query["query_data"]["links"]:
-                link_values = {}
-                for info_type in query["query_data"]["links"]:
-                    link_values[info_type] = [[] for _ in range(no_links)]
+            if sim_dict["query"]["links"]:
+                link_query = True
         except:
-            link_values = False
+            link_query = False
+
+        # emitter info:
+        try:
+            simulations = sim_dict["emitter_values"]
+        except:
+            simulations = False
 
 
+        if simulations:
+            node_values = []
+            link_values = []
 
-        # time step
+            for node_index, emitter_value in  simulations:
+                print("Simulating emitter in node no{}".format(node_index))
 
-        t_step = 1
+                self.set_emitter(node_index, emitter_value)
 
-        while t_step > 0:
+                if node_query:
+                    node_values.append(self.get_nodes_data(sim_dict["query"]["nodes"]))
 
-            self.ENrunH()
+                if link_query:
+                    link_values.append(self.get_nodes_data(sim_dict["query"]["links"]))
 
-            if node_values:
-                for node_index in range(no_nodes):
-                    for info_type in query["query_data"]["nodes"]:
-                        ret_val = self.ENgetnodevalue(node_index, eval(info_type))
-                        ret_val = ret_val[1]
-                        node_values[info_type][node_index].append(ret_val)
+                # reset emitter values everywhere in network
+                self.set_emitters()
 
 
-            if link_values:
-                for link_index in range(no_links):
-                    for info_type in query["query_data"]["links"]:
-                        ret_val = self.ENgetnodevalue(link_index, eval(info_type))
-                        ret_val = ret_val[1]
-                        link_values[info_type][link_index].append(ret_val)
+        else:
 
-            t_step = self.ENnextH()
-            t_step = t_step[1]
+            if node_query:
+                node_values = self.get_nodes_data(sim_dict["query"]["nodes"])
+            else:
+                node_values = []
+
+            if link_query:
+                link_values = self.get_links_data(sim_dict["query"]["links"])
+            else:
+                link_values = []
+
 
 
         self.ENcloseH()
@@ -231,17 +295,24 @@ if __name__ == '__main__':
         "simulation_name": "name",
 
         "simulation_type": "H",
+        "emitter_values" : [(5,0), (5,500)],
 
-        "query_data": {
+        "query": {
 
-            "nodes": ["EN_PRESSURE", "EN_DEMAND"],
-
-            "links": ["EN_VELOCITY"]
-
+            "nodes": ["EN_PRESSURE"],
         }
 
     }
-    ret_val = es.query_network(query_dict)
+
+    simulations = es.query_network(query_dict)
     import pprint
 
-    pprint.pprint(ret_val)
+
+
+    pressures = simulations["NODE_VALUES"]
+
+    for p in pressures:
+        plt.plot(p["EN_PRESSURE"])
+
+    plt.show()
+
