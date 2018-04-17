@@ -119,12 +119,11 @@ class ENSim(EPANetSimulation):
         # for the moment i'll treat only hydraulic simulations :)
 
         # initialize network simulaton
-        getNcheck = ENSim._getNcheck
 
-        getNcheck(self.ENopenH())
+        ENSim._getNcheck(self.ENopenH())
 
         # initialize session
-        getNcheck(self.ENinitH(ENSim.EN_INIT))
+        ENSim._getNcheck(self.ENinitH(ENSim.EN_INIT))
 
         node_query = False
         link_query = False
@@ -186,6 +185,8 @@ class ENSim(EPANetSimulation):
         self.ENcloseH()
         self.ENclose()
 
+        self.__init__(self.OriginalInputFileName)
+
         return {
             "SIM_NAME"   : sim_dict["simulation_name"],
             "NODE_VALUES": node_values,
@@ -213,14 +214,13 @@ class ENSim(EPANetSimulation):
 
         values = json_data["NODE_VALUES"]
 
-
-        ts = self.get_time_step(1)
-
         date_range = pd.date_range('1/1/2018', periods=97, freq='0.25H')
         data1 = np.transpose(values[0]["EN_PRESSURE"])
         data2 = np.transpose(values[1]["EN_PRESSURE"])
 
         fig = tools.make_subplots(1, 2, subplot_titles=('Emitter Value = 0', 'Emitter Value = 760'))
+
+        time_step = self.get_time_step()
 
         for vals in data1:
             fig.append_trace(Scatter(
@@ -305,5 +305,6 @@ if __name__ == '__main__':
 
 
     data = es.query_network(query_dict)
-
     es.plot(data)
+    print(es.get_time_step())
+
