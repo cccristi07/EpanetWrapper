@@ -1,10 +1,19 @@
-import ctypes
-import matplotlib.pyplot as plt
+#epanet toolkit
 from epanettools.epanettools import *
 from epanettools import pdd
+from epanettools import pdd_class_wrapper
 from epanettools.epanet2 import *
 import numpy as np
 import json
+
+import pandas as pd
+
+# plotting imports
+from plotly.offline import download_plotlyjs, plot, iplot
+from plotly.graph_objs import *
+from plotly import tools
+import matplotlib.pyplot as plt
+
 
 
 # extending the EPANetSimulation class to ease acces to
@@ -117,6 +126,10 @@ class ENSim(EPANetSimulation):
         # initialize session
         getNcheck(self.ENinitH(ENSim.EN_INIT))
 
+        node_query = False
+        link_query = False
+        simulations = False
+
 
         # check json for querried data
 
@@ -179,6 +192,57 @@ class ENSim(EPANetSimulation):
             "LINK_VALUES": link_values
         }
 
+    def get_time_step(self, pattern_id=1):
+        '''
+        returns the time_step of the network in minutes
+        :param pattern_id:
+        :return:
+        '''
+        return (24*60)/ENSim._getNcheck(self.ENgetpatternlen(pattern_id))
+
+
+
+
+    def plot(self, json_data):
+        '''
+        utility function used to plot data from network simulations
+        WIP
+        :param json_data:
+        :return:
+        '''
+
+        values = json_data["NODE_VALUES"]
+
+
+        ts = self.get_time_step(1) # will use 15minutes as a general timestep
+
+        date_range = pd.date_range('1/1/2018', periods=97, freq='0.25H')
+        data1 = np.transpose(values[0]["EN_PRESSURE"])
+        data2 = np.transpose(values[1]["EN_PRESSURE"])
+
+        fig = tools.make_subplots(1, 2, subplot_titles=('Emitter Value = 0', 'Emitter Value = 760'))
+
+        for vals in data1:
+            fig.append_trace(Scatter(
+                x=date_range,
+                y=vals), 1, 1)
+
+        for vals in data2:
+            fig.append_trace(Scatter(
+                x=date_range,
+                y=vals), 1, 2)
+
+        fig['layout'].update(title='Pressiure in water network')
+
+        plot(fig)
+
+    @staticmethod
+    def write_json(output_json):
+        import json
+        str = json.dumps(output_json)
+        with open("data.json", "wt") as f:
+            f.write(str)
+
     @staticmethod
     def _getNcheck(ret_val):
 
@@ -194,6 +258,25 @@ class ENSim(EPANetSimulation):
             if ret_val is not 0:
                 err_msg = ENgeterror(ret_val, 100)
                 raise EpanetError(err_msg)
+
+def ENcheck(func):
+
+    def func_wrapper(*args):
+        ret_val = func(args)
+
+        # check the return code
+        if isinstance(ret_val, list):
+            if ret_val[0] == 0:
+                # everything OK
+                return ret_val[1]
+            else:
+                err_msg = ENgeterror(ret_val[0], 100)
+                raise EpanetError(err_msg)
+        else:
+            if ret_val is not 0:
+                err_msg = ENgeterror(ret_val, 100)
+                raise EpanetError(err_msg)
+
 
 
 class EpanetError(Exception):
@@ -219,49 +302,8 @@ if __name__ == '__main__':
         }
 
     }
-    from datetime import datetime
-
-    datetime(2018,4,17,)
-    simulations = es.query_network(query_dict)
-
-    import json
-    data = json.dumps(simulations)
-    with open("data.json", "wt") as f:
-        f.write(data)
-
-    values = simulations["NODE_VALUES"]
 
 
-    from plotly.offline import download_plotlyjs, plot, iplot
-    from plotly.graph_objs import *
-    from plotly import tools
+    data = es.query_network(query_dict)
 
-    import pandas_datareader.data as web
-    import pandas as pd
-
-
-
-    date_range = pd.date_range('1/1/2018', periods=97, freq='0.25H')
-    data1 = np.transpose(values[0]["EN_PRESSURE"])
-    data2 = np.transpose(values[1]["EN_PRESSURE"])
-
-    fig = tools.make_subplots(1, 2, subplot_titles=('Emitter Value = 0', 'Emitter Value = 760'))
-
-
-    for vals in data1:
-        fig.append_trace(Scatter(
-                x=date_range,
-                y=vals),1,1)
-
-
-
-
-    for vals in data2:
-        fig.append_trace(Scatter(
-                x=date_range,
-                y=vals),1,2)
-
-
-    fig['layout'].update(title='Pressiure in water network')
-
-    plot(fig)
+    es.plot(data)
