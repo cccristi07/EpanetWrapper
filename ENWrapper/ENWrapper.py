@@ -239,9 +239,6 @@ if __name__ == '__main__':
     import pandas_datareader.data as web
     import pandas as pd
 
-    df = web.DataReader("aapl", 'morningstar',
-                        datetime(2015, 1, 1),
-                        datetime(2016, 7, 1)).reset_index()
 
 
     date_range = pd.date_range('1/1/2018', periods=97, freq='0.25H')
