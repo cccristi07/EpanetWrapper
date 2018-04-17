@@ -214,7 +214,7 @@ class ENSim(EPANetSimulation):
         values = json_data["NODE_VALUES"]
 
 
-        ts = self.get_time_step(1) # will use 15minutes as a general timestep
+        ts = self.get_time_step(1)
 
         date_range = pd.date_range('1/1/2018', periods=97, freq='0.25H')
         data1 = np.transpose(values[0]["EN_PRESSURE"])
