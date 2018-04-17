@@ -222,19 +222,27 @@ class ENSim(EPANetSimulation):
 
         time_step = self.get_time_step()
 
+
+        trace = []
         for vals in data1:
             fig.append_trace(Scatter(
                 x=date_range,
                 y=vals), 1, 1)
+
+            trace.append(Scatter(
+                x=date_range,
+                y=vals))
 
         for vals in data2:
             fig.append_trace(Scatter(
                 x=date_range,
                 y=vals), 1, 2)
 
-        fig['layout'].update(title='Pressiure in water network')
+        fig['layout'].update(title='Pressure in water network')
 
         plot(fig)
+
+        plot(trace)
 
     @staticmethod
     def write_json(output_json):
