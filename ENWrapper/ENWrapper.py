@@ -7,6 +7,8 @@ import numpy as np
 import json
 
 import pandas as pd
+import json
+
 
 # plotting imports
 from plotly.offline import download_plotlyjs, plot, iplot
@@ -23,6 +25,7 @@ class ENSim(EPANetSimulation):
     EN_INIT = 10
 
     def __init__(self, inputFileName, pdd=False):
+        self.json_sim = {}
         super().__init__(inputFileName, pdd)
 
     def set_emitter(self, node_index, emitter_val):
@@ -40,7 +43,7 @@ class ENSim(EPANetSimulation):
             for node_index, emitter_val in emitter_info:
                 self.set_emitter(node_index, emitter_val)
 
-    def get_nodes_data(self, data_query, emitter=0):
+    def get_nodes_data(self, data_query, emitter=(1,0)):
 
         no_nodes = ENSim._getNcheck(self.ENgetcount(EN_NODECOUNT)) - ENSim._getNcheck(self.ENgetcount(EN_TANKCOUNT))
         t_step = 1
@@ -50,7 +53,8 @@ class ENSim(EPANetSimulation):
         for queries in data_query:
             node_values[queries] = [[] for _ in range(no_nodes)]
 
-        node_values["EMITTER_VAL"] = emitter
+        node_values["EMITTER_NODE"] = emitter[0]
+        node_values["EMITTER_VAL"] = emitter[1]
 
         # initialize network for hydraulic process
 
@@ -72,7 +76,7 @@ class ENSim(EPANetSimulation):
 
         return node_values
 
-    def get_links_data(self, data_query, emitter=0):
+    def get_links_data(self, data_query, emitter=(1, 0)):
 
         no_links = self.ENgetcount(EN_LINKCOUNT)[1]
         t_step = 1
@@ -81,7 +85,8 @@ class ENSim(EPANetSimulation):
         for queries in data_query:
             link_values[queries] = [[] for _ in range(no_links)]
 
-        link_values["EMITTER_VAL"] = emitter
+        link_values["EMITTER_NODE"] = emitter[0]
+        link_values["EMITTER_VAL"] = emitter[1]
 
         while t_step > 0:
             ENSim._getNcheck(self.ENrunH())
@@ -162,10 +167,10 @@ class ENSim(EPANetSimulation):
                 self.set_emitter(node_index, emitter_value)
 
                 if node_query:
-                    node_values.append(self.get_nodes_data(sim_dict["query"]["nodes"], emitter=emitter_value))
+                    node_values.append(self.get_nodes_data(sim_dict["query"]["nodes"], emitter=(node_index, emitter_value)))
 
                 if link_query:
-                    link_values.append(self.get_links_data(sim_dict["query"]["links"], emitter=emitter_value))
+                    link_values.append(self.get_links_data(sim_dict["query"]["links"], emitter=(node_index, emitter_value)))
 
                 # reset emitter values everywhere in network
                 self.set_emitters()
@@ -186,12 +191,12 @@ class ENSim(EPANetSimulation):
         self.ENclose()
 
         self.__init__(self.OriginalInputFileName)
-
-        return {
+        self.json_sim = {
             "SIM_NAME"   : sim_dict["simulation_name"],
             "NODE_VALUES": node_values,
             "LINK_VALUES": link_values
         }
+        return self.json_sim
 
     def get_time_step(self, pattern_id=1):
         '''
@@ -244,9 +249,18 @@ class ENSim(EPANetSimulation):
 
         plot(trace)
 
+    def save_data(self, path=None):
+
+        try:
+            with open(path, "wt") as file:
+                file.write(json.dumps(self.json_sim))
+        except IOError:
+            print("Could not write to file {}".format(path))
+
+
     @staticmethod
     def write_json(output_json):
-        import json
+
         str = json.dumps(output_json)
         with open("data.json", "wt") as f:
             f.write(str)
@@ -297,7 +311,11 @@ if __name__ == '__main__':
 
     es = ENSim("ENWrapper/data/hanoi.inp")
 
-    emitters = [(5, 0), (0, 110)]
+    emitters = [(5, 0),
+                (5, 10),
+                (5, 100),
+                (10, 10),
+                (10, 200)]
 
     query_dict = {
         "simulation_name": "Hanoi simulation",
@@ -314,5 +332,5 @@ if __name__ == '__main__':
 
     data = es.query_network(query_dict)
     es.plot(data)
-    print(es.get_time_step())
+    es.save_data("emitter_simulations.json")
 
