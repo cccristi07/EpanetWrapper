@@ -231,8 +231,7 @@ class ENSim(EPANetSimulation):
         '''
 
         values = json_data["NODE_VALUES"]
-
-        date_range = pd.date_range('1/1/2018', periods=97, freq='0.25H')
+        date_range = pd.date_range('1/1/2018', periods=97, freq='15min')
         data1 = np.transpose(values[0]["EN_PRESSURE"])
         data2 = np.transpose(values[1]["EN_PRESSURE"])
 
@@ -322,7 +321,7 @@ class EpanetError(Exception):
 
 if __name__ == '__main__':
 
-    es = ENSim("ENWrapper/data/hanoi.inp")
+    es = ENSim("data/hanoi.inp")
 
     emitters = [(5, 0),
                 (5, 10),
