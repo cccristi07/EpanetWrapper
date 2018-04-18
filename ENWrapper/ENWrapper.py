@@ -119,6 +119,19 @@ class ENSim(EPANetSimulation):
             }
         }
         :return: JSON with required data
+        output_json format:
+        {
+            SIM_NAME = simulation-name
+            NODE_VALUES = [
+                {
+                    "EN_PRESSURE" : [ [values for each node]]
+                    "EMITTER_VAL" :
+                    "EMITTER_NODE" :
+                }
+            ]
+
+        }
+
         '''
 
         # for the moment i'll treat only hydraulic simulations :)
