@@ -1,19 +1,14 @@
 #epanet toolkit
-from epanettools.epanettools import *
-from epanettools.epanet2 import *
-import numpy as np
-
-
-import pandas as pd
 import json
 
-
-# plotting imports
-from plotly.offline import download_plotlyjs, plot, iplot
-from plotly.graph_objs import *
+import numpy as np
+import pandas as pd
+from epanettools.epanet2 import *
+from epanettools.epanettools import *
 from plotly import tools
-import matplotlib.pyplot as plt
-
+from plotly.graph_objs import *
+# plotting imports
+from plotly.offline import plot
 
 
 # extending the EPANetSimulation class to ease acces to
