@@ -8,6 +8,14 @@ setup(name='EpanetWrapper',
       author_email='cccristi07@gmail.com',
       license='MIT',
       packages=['ENWrapper'],
+      classifiers=[
+        'Development status :: Beta',
+        "Intendend Audience :: Students and researchers",
+        "License :: MIT",
+        "Operating System :: POSIX",
+        "Operating System :: Windows",
+        "Programming Language :: Python :: 3"
+        ],
       zip_safe=False,
       install_requires=[
           "numpy",
