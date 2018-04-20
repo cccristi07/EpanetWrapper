@@ -245,7 +245,6 @@ class ENSim(EPANetSimulation):
         fig['layout'].update(title='Pressure in water network')
 
         plot(fig)
-
         plot(trace)
 
     def save_data(self, path=None):

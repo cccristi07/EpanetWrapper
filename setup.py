@@ -12,7 +12,9 @@ setup(name='EpanetWrapper',
       install_requires=[
           "numpy",
           "matplotlib",
-          "epanettools"
+          "epanettools",
+          'pandas',
+          'plotly'
       ]
 
       )
