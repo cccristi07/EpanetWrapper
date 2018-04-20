@@ -194,7 +194,6 @@ class ENSim(EPANetSimulation):
         self.ENcloseH()
         self.ENclose()
 
-        self.__init__(self.OriginalInputFileName)
         self.json_sim = {
             "SIM_NAME": sim_dict["simulation_name"],
             "NODE_VALUES": node_values,
@@ -217,6 +216,7 @@ class ENSim(EPANetSimulation):
         :param json_data:
         :return:
         """
+        self.__init__(self.OriginalInputFileName)
 
         values = json_data["NODE_VALUES"]
         date_range = pd.date_range('1/1/2018', periods=97, freq='15min')
