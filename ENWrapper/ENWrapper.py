@@ -21,14 +21,16 @@ class ENSim(EPANetSimulation):
         super().__init__(network_file, pdd)
 
     def set_emitter(self, node_index, emitter_val):
-        self.ENsetnodevalue(node_index, EN_EMITTER, emitter_val)
+        if self.network.nodes[node_index].node_type is EN_JUNCTION:
+            ENSim._getncheck(self.ENsetnodevalue(node_index, EN_EMITTER, emitter_val))
+
 
     def set_emitters(self, emitter_info=None):
 
         if emitter_info is None:
             # if arg is none reset emitter values
             for node_index in self.network.nodes:
-                self.ENsetnodevalue(node_index, EN_EMITTER, 0)
+                self.set_emitter(node_index, 0)
         else:
 
             for node_index, emitter_val in emitter_info:
@@ -77,6 +79,10 @@ class ENSim(EPANetSimulation):
 
         link_values["EMITTER_NODE"] = emitter[0]
         link_values["EMITTER_VAL"] = emitter[1]
+
+        # initialize network for hydraulic process
+
+        ENSim._getncheck(self.ENinitH(ENSim.EN_INIT))
 
         while t_step > 0:
             ENSim._getncheck(self.ENrunH())
@@ -164,9 +170,10 @@ class ENSim(EPANetSimulation):
             link_values = []
 
             for node_index, emitter_value in simulations:
-                print("Simulating emitter in node no{}".format(node_index))
+                print("Simulating emitter in node no {} with value {}".format(node_index, emitter_value))
 
                 self.set_emitter(node_index, emitter_value)
+                print(self.ENgetnodevalue(node_index, EN_EMITTER))
 
                 if node_query:
                     node_values.append(
@@ -194,6 +201,7 @@ class ENSim(EPANetSimulation):
         self.ENcloseH()
         self.ENclose()
 
+        self.__init__(self.OriginalInputFileName)
         self.json_sim = {
             "SIM_NAME": sim_dict["simulation_name"],
             "NODE_VALUES": node_values,
@@ -209,43 +217,54 @@ class ENSim(EPANetSimulation):
         """
         return (24 * 60) / ENSim._getncheck(self.ENgetpatternlen(pattern_id))
 
-    def plot(self, json_data):
+    def plot(self, json_data, residues=False):
         """
         utility function used to plot data from network simulations
         WIP
         :param json_data:
         :return:
         """
-        self.__init__(self.OriginalInputFileName)
-
         values = json_data["NODE_VALUES"]
         date_range = pd.date_range('1/1/2018', periods=97, freq='15min')
-        data1 = np.transpose(values[0]["EN_PRESSURE"])
-        data2 = np.transpose(values[1]["EN_PRESSURE"])
 
-        fig = tools.make_subplots(1, 2, subplot_titles=('Emitter Value = 0', 'Emitter Value = 760'))
+        if residues:
+            # consider the first value of the JSON as the reference
+            ref = values[0]
+            for emitter in values:
+                trace = []
+                data = np.transpose(emitter["EN_PRESSURE"]) - np.transpose(ref["EN_PRESSURE"])
 
-        time_step = self.get_time_step()
+                for node_index, vals in enumerate(data):
+                    trace.append(Scatter(
+                        x=date_range,
+                        y=vals,
+                        name="node{}".format(node_index+1)
+                    )
+                    )
+                layout = dict(
+                    title = "Ressidues with emitter in node {}, val = {}".format(emitter["EMITTER_NODE"], emitter["EMITTER_VAL"])
+                )
 
-        trace = []
-        for vals in data1:
-            fig.append_trace(Scatter(
-                x=date_range,
-                y=vals), 1, 1)
+                fig = dict(data=trace, layout=layout)
+                plot(fig, filename= "Plot_node{}val{}".format(emitter["EMITTER_NODE"], emitter["EMITTER_VAL"]))
 
-            trace.append(Scatter(
-                x=date_range,
-                y=vals))
+        else:
+            for emitter in values:
+                trace = []
+                data = np.transpose(emitter["EN_PRESSURE"])
+                for node_index, vals in enumerate(data):
+                    trace.append(Scatter(
+                        x=date_range,
+                        y=vals,
+                        name="node{}".format(node_index+1)
+                    )
+                    )
+                layout = dict(
+                    title = "Pressure with emitter in node {}, val = {}".format(emitter["EMITTER_NODE"], emitter["EMITTER_VAL"])
+                )
 
-        for vals in data2:
-            fig.append_trace(Scatter(
-                x=date_range,
-                y=vals), 1, 2)
-
-        fig['layout'].update(title='Pressure in water network')
-
-        plot(fig)
-        plot(trace)
+                fig = dict(data=trace, layout=layout)
+                plot(fig, filename= "Plot_node{}val{}".format(emitter["EMITTER_NODE"], emitter["EMITTER_VAL"]))
 
     def save_data(self, path=None):
 
@@ -303,14 +322,63 @@ class EpanetError(Exception):
         super().__init__(err_msg)
 
 
+def run_simulation(network, pdd, query_dict):
+
+    es = EPANetSimulation(network, pdd)
+
+    print("Running {}".format(query_dict["simulation_name"]))
+    ret_vals = []
+
+    print(query_dict)
+    for emitter, emitter_val in query_dict["emitter_values"]:
+        print("for node {} simulating emitter_Val {}".format(emitter, emitter_val))
+
+        # modify current network and and save inp temp file
+
+        es.ENsetnodevalue(emitter, EN_EMITTER, emitter_val)
+
+        es.ENsaveinpfile("temp.inp")
+        print(es.ENsetnodevalue(emitter, EN_EMITTER, 0))
+
+        e2 = EPANetSimulation("temp.inp", pdd)
+        e2.ENsetnodevalue(emitter,EN_EMITTER,emitter_val)
+
+        e2.run()
+
+        node_vals = {}
+        link_vals = {}
+        for node_query in query_dict["query"]["nodes"]:
+            node_vals[node_query] = []
+
+        for link_query in query_dict["query"]["links"]:
+            link_vals[link_query] = []
+
+        for node_query in query_dict["query"]["nodes"]:
+            for node in e2.network.nodes:
+                node_vals[node_query].append(e2.network.nodes[node].results[eval(node_query)])
+
+        for link_query in query_dict["query"]["links"]:
+            for link in e2.network.links:
+                link_vals[link_query].append(e2.network.links[link].results[eval(link_query)])
+
+
+        ret_vals.append({
+            "EMIITER_VAL" : emitter_val,
+            "EMITTER_NODE" : emitter,
+            "NODE_VALS" : np.transpose(node_vals).tolist(),
+            "LINK_VALS" : np.transpose(link_vals).tolist()
+        })
+    return ret_vals
+
+
 if __name__ == '__main__':
     es = ENSim("data/hanoi.inp")
 
-    emitters = [(5, 0),
+    emitters = [(5,0),
                 (5, 10),
-                (5, 100),
-                (10, 10),
-                (10, 200)]
+                (5, 125),
+                (5, 200),
+                (5, 500)]
 
     query_dict = {
         "simulation_name": "Hanoi simulation",
@@ -325,5 +393,19 @@ if __name__ == '__main__':
     }
 
     data = es.query_network(query_dict)
-    es.plot(data)
-    es.save_data("emitter_simulations.json")
+
+
+    pe1 = np.array(data["LINK_VALUES"][0]["EN_VELOCITY"])
+    pe2 = np.array(data["LINK_VALUES"][1]["EN_VELOCITY"])
+
+    print(pe1)
+    import matplotlib.pyplot as plt
+
+
+    plt.figure()
+    plt.plot(pe1)
+    plt.figure()
+    plt.plot(pe2)
+    plt.show()
+    es.plot(data, residues=True)
+    # es.save_data("data/emitter_simulations.json")
