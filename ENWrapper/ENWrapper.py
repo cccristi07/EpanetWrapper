@@ -17,6 +17,7 @@ class ENSim(EPANetSimulation):
     EN_INIT = 10
 
     def __init__(self, network_file, pdd=False):
+        # careful when using pdd = true for residues simulations
         self.json_sim = {}
         super().__init__(network_file, pdd)
 
@@ -286,10 +287,10 @@ class ENSim(EPANetSimulation):
             print("Could not write to file {}".format(path))
 
     @staticmethod
-    def write_json(output_json):
+    def write_json(output_json, path):
 
         json_data = json.dumps(output_json)
-        with open("data.json", "wt") as f:
+        with open(path, "wt") as f:
             f.write(json_data)
 
     @staticmethod
@@ -374,7 +375,7 @@ def run_simulation(network, pdd, query_dict):
 
 
         ret_vals.append({
-            "EMIITER_VAL" : emitter_val,
+            "EMITTER_VAL" : emitter_val,
             "EMITTER_NODE" : emitter,
             "NODE_VALS" : np.transpose(node_vals).tolist(),
             "LINK_VALS" : np.transpose(link_vals).tolist()
@@ -383,10 +384,10 @@ def run_simulation(network, pdd, query_dict):
 
 
 if __name__ == '__main__':
-    es = ENSim("data/hanoi.inp")
+    es = ENSim("data/hanoi.inp", pdd=False)
 
     emitter_vals = [10, 20, 30, 50, 100]
-    nodes = list(range(1, 32))
+    nodes = list(range(1, 20))
 
     emitters = [ (node, val) for node in nodes for val in emitter_vals]
 
@@ -402,11 +403,14 @@ if __name__ == '__main__':
 
     }
 
+    # ret_json = run_simulation("data/hanoi.inp", True, query_dict)
+    # es.write_json(ret_json, "/home/spark/emitter_simulations.json");
+
     data = es.query_network(query_dict)
 
 
-    pe1 = np.array(data["LINK_VALUES"][0]["EN_VELOCITY"])
-    pe2 = np.array(data["LINK_VALUES"][1]["EN_VELOCITY"])
+    # pe1 = np.array(data["LINK_VALUES"][0]["EN_VELOCITY"])
+    # pe2 = np.array(data["LINK_VALUES"][1]["EN_VELOCITY"])
 
     import matplotlib.pyplot as plt
 
@@ -417,4 +421,4 @@ if __name__ == '__main__':
     # plt.plot(pe2)
     # plt.show()
     # es.plot(data, residues=True)
-    es.save_data("data/emitter_simulations.json")
+    es.save_data("/home/spark/emitter_pddTrue.json")
