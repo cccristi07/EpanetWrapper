@@ -169,11 +169,21 @@ class ENSim(EPANetSimulation):
             node_values = []
             link_values = []
 
+            # in order to plot residues we need to simulate the case where there is no leakage
+
+            self.set_emitters()
+            if node_query:
+                node_values.append(
+                    self.get_nodes_data(sim_dict["query"]["nodes"]))
+
+            if link_query:
+                link_values.append(
+                    self.get_links_data(sim_dict["query"]["links"]))
+
             for node_index, emitter_value in simulations:
                 print("Simulating emitter in node no {} with value {}".format(node_index, emitter_value))
 
                 self.set_emitter(node_index, emitter_value)
-                print(self.ENgetnodevalue(node_index, EN_EMITTER))
 
                 if node_query:
                     node_values.append(
@@ -198,8 +208,8 @@ class ENSim(EPANetSimulation):
             else:
                 link_values = []
 
-        self.ENcloseH()
-        self.ENclose()
+        ENSim._getncheck(self.ENcloseH())
+        ENSim._getncheck(self.ENclose())
 
         self.__init__(self.OriginalInputFileName)
         self.json_sim = {
@@ -233,6 +243,7 @@ class ENSim(EPANetSimulation):
             for emitter in values:
                 trace = []
                 data = np.transpose(emitter["EN_PRESSURE"]) - np.transpose(ref["EN_PRESSURE"])
+
 
                 for node_index, vals in enumerate(data):
                     trace.append(Scatter(
@@ -374,11 +385,10 @@ def run_simulation(network, pdd, query_dict):
 if __name__ == '__main__':
     es = ENSim("data/hanoi.inp")
 
-    emitters = [(5,0),
-                (5, 10),
-                (5, 125),
-                (5, 200),
-                (5, 500)]
+    emitter_vals = [10, 20, 30, 50, 100]
+    nodes = list(range(1, 32))
+
+    emitters = [ (node, val) for node in nodes for val in emitter_vals]
 
     query_dict = {
         "simulation_name": "Hanoi simulation",
@@ -398,14 +408,13 @@ if __name__ == '__main__':
     pe1 = np.array(data["LINK_VALUES"][0]["EN_VELOCITY"])
     pe2 = np.array(data["LINK_VALUES"][1]["EN_VELOCITY"])
 
-    print(pe1)
     import matplotlib.pyplot as plt
 
 
-    plt.figure()
-    plt.plot(pe1)
-    plt.figure()
-    plt.plot(pe2)
-    plt.show()
-    es.plot(data, residues=True)
-    # es.save_data("data/emitter_simulations.json")
+    # plt.figure()
+    # plt.plot(pe1)
+    # plt.figure()
+    # plt.plot(pe2)
+    # plt.show()
+    # es.plot(data, residues=True)
+    es.save_data("data/emitter_simulations.json")
