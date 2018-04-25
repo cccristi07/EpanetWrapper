@@ -89,10 +89,9 @@ for epoch in range(500):
 
     network.fit(X, y)
 
-print(network.coefs_[0])
-
-
-input()
+node_importance = np.sum(np.abs(network.coefs_[0]), axis=1)
+print(len(node_importance))
+print(node_importance)
 
 y_pred = network.predict(X_test)
 
