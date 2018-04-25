@@ -386,15 +386,22 @@ def run_simulation(network, pdd, query_dict):
 if __name__ == '__main__':
     es = ENSim("data/hanoi.inp", pdd=False)
 
-    emitter_vals = [10, 20, 30, 50, 100]
-    nodes = list(range(1, 20))
+    test_vals = [val for val in range(32) if val % 2 == 0]
+    train_vals = [val for val in range(32) if val % 2 == 1]
 
-    emitters = [ (node, val) for node in nodes for val in emitter_vals]
 
-    query_dict = {
-        "simulation_name": "Hanoi simulation",
+    intense_leak = [35, 40, 50, 60, 100]
+
+    nodes = list(range(1, 32))
+
+    emitter_test = [ (node, val) for node in nodes for val in test_vals]
+    emitter_train = [(node, val) for node in nodes for val in train_vals]
+    emitter_intense_leak = [(node, val) for node in nodes for val in intense_leak]
+
+    train_dataset = {
+        "simulation_name": "Hanoi train simulation",
         "simulation_type": "H",
-        "emitter_values": emitters,
+        "emitter_values": emitter_train,
         "query": {
 
             "nodes": ["EN_PRESSURE", "EN_DEMAND"],
@@ -403,22 +410,38 @@ if __name__ == '__main__':
 
     }
 
-    # ret_json = run_simulation("data/hanoi.inp", True, query_dict)
-    # es.write_json(ret_json, "/home/spark/emitter_simulations.json");
+    test_dataset = {
+        "simulation_name": "Hanoi test simulation",
+        "simulation_type": "H",
+        "emitter_values": emitter_test,
+        "query": {
 
-    data = es.query_network(query_dict)
+            "nodes": ["EN_PRESSURE", "EN_DEMAND"],
+            "links": ["EN_VELOCITY"]
+        }
+
+    }
+
+    test2_dataset = {
+
+        "simulation_name": "Hanoi intense leak simulation",
+        "simulation_type": "H",
+        "emitter_values": emitter_intense_leak,
+        "query": {
+
+            "nodes": ["EN_PRESSURE", "EN_DEMAND"],
+            "links": ["EN_VELOCITY"]
+        }
+
+    }
+
+    data_train = es.query_network(train_dataset)
+    es.save_data("/home/spark/train_set.json")
+    data_test = es.query_network(test_dataset)
+    es.save_data("/home/spark/test_set.json")
+    data_test2 = es.query_network(test2_dataset)
+    es.save_data("/home/spark/test2_set.json")
 
 
-    # pe1 = np.array(data["LINK_VALUES"][0]["EN_VELOCITY"])
-    # pe2 = np.array(data["LINK_VALUES"][1]["EN_VELOCITY"])
-
-    import matplotlib.pyplot as plt
 
 
-    # plt.figure()
-    # plt.plot(pe1)
-    # plt.figure()
-    # plt.plot(pe2)
-    # plt.show()
-    # es.plot(data, residues=True)
-    es.save_data("/home/spark/emitter_pddTrue.json")
