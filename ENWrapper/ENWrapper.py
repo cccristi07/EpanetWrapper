@@ -436,11 +436,11 @@ if __name__ == '__main__':
     }
 
     data_train = es.query_network(train_dataset)
-    es.save_data("/home/spark/train_set.json")
+    es.save_data("~/train_set.json")
     data_test = es.query_network(test_dataset)
-    es.save_data("/home/spark/test_set.json")
+    es.save_data("~/test_set.json")
     data_test2 = es.query_network(test2_dataset)
-    es.save_data("/home/spark/test2_set.json")
+    es.save_data("~/test2_set.json")
 
 
 
