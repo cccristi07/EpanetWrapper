@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6600 64-bit) (preloaded format=xelatex 2018.3.9)  9 MAR 2018 11:30
+This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6600 64-bit) (preloaded format=xelatex 2018.3.9)  4 JUN 2018 00:48
 entering extended mode
 **./thesis.tex
 (thesis.tex
@@ -1828,29 +1828,30 @@ Overfull \hbox (64.45273pt too wide) in paragraph at lines 36--36
 \openout8 = `thesis.toc'.
 
 
-Using TeX to sort glossary entries---this may take a while
+
+Package glossaries Warning: Empty glossary for \printnoidxglossary[type={main}]
+. Rerun may be required (or you may have forgotten to use commands like \gls) o
+n input line 41.
+
 [2
-
-] [3
-
 
 ] (thesis.lof)
 \tf@lof=\write9
 \openout9 = `thesis.lof'.
 
- [4
+ [3
 
 ] (thesis.lot)
 \tf@lot=\write10
 \openout10 = `thesis.lot'.
 
- [5
+ [4
 
 ] (thesis.loa)
 \tf@loa=\write11
 \openout11 = `thesis.loa'.
 
- [6
+ [5
 
 ] (chapters/intro.tex
 chapter 1.
@@ -1872,183 +1873,7 @@ Class scrreprt Warning: \float@addtolists detected!
 [1
 
 
-] [2]) (chapters/diverse.tex [3]
-chapter 2.
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-) (chapters/main.tex [4
-
-]
-chapter 3.
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-
-Overfull \hbox (23.78183pt too wide) in paragraph at lines 10--11
-[][] 
- []
-
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-
-Overfull \hbox (40.77953pt too wide) in paragraph at lines 16--17
-[][]$[][][][][] [] [] [] [][][][][][][] [] [][][] [] [][][][] [] [][] [] [][] [
-] [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
-][][][][][][][][][][][][][][][][][]$[][] 
- []
-
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-[5
-
-]
-File: ./pics/binary/KarnaughDiagramForHyperplaneArrangement.pdf Graphic file (t
-ype pdf)
-<use ./pics/binary/KarnaughDiagramForHyperplaneArrangement.pdf>
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-File: ./pics/binary/cutForEveryTuple.pdf Graphic file (type pdf)
-<use ./pics/binary/cutForEveryTuple.pdf>
-File: ./pics/binary/cutForEveryEdge.pdf Graphic file (type pdf)
-<use ./pics/binary/cutForEveryEdge.pdf>
-File: ./pics/binary/cutForAllTuples.pdf Graphic file (type pdf)
-<use ./pics/binary/cutForAllTuples.pdf>
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
- [6]
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
- [7]
-Overfull \hbox (251.85199pt too wide) in paragraph at lines 133--133
-[] \TU/lmtt/m/n/10.95 title={{Linear systems with state and control constraints
-: the theory and application of maximal output admissible sets}},[] 
- []
-
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ‌ in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no ​ in font [lmroman10-regular]:mapping=tex-text;!
-[8]
-Overfull \hbox (2.51686pt too wide) in paragraph at lines 181--182
-[][][][][][][][]$[][] \TU/lmr/m/n/10.95 sau în documentul [][]$[][][][] [] [] [
-] [][][][] [] [][][][] [] [][][][] [] [][][] [] [][][][][][][][][][][][] [] [][
-][][][][] [] [][][][][] []
- []
-
-
-! Class scrreprt Error: undefined old font command `\tt'.
-
-See the scrreprt class documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.191 \end{Verbatim}
-                    
-You should note that since 1994 LaTeX2e provides a new font selection scheme
-called NFSS2 with several new, combinable font commands. KOMA-Script
-classes had defined the old font commands like `\tt' only for compatibility
-with old LaTeX 2.09 document styles of Script 2.0. Nevertheless, these
-commands are deprecated and undocumented at least since 2003. Since 2013
-KOMA-Script classes warned about soon removement of these deprecated commands.
-Now, after two decades of LaTeX2e and NFSS2, these commands will not work any
-more. If loading a package results in this error message, you should contact
-the author of that package and ask him to replace the deprecated font command
-`\tt', e.g., by `\normalfont \ttfamily `. Otherwise you should reconfigure
-or replace the package. If you have used the old font command `\tt' yourself,
-you should replace it, e.g., by `\normalfont \ttfamily '.
-To make it work for now, you can use the already also deprecated class option
-`enabledeprecatedfontcommands'.
-
-
-Overfull \hbox (49.277pt too wide) in paragraph at lines 191--191
- []\TU/lmtt/m/n/10.95 \lstinputlisting[caption={Cod Matlab -- fișier complet},l
-abel={lst:s1}]{\code/s1.m}[]  
- []
-
-
-Overfull \hbox (210.24194pt too wide) in paragraph at lines 191--191
- []\TU/lmtt/m/n/10.95 \lstinputlisting[caption={Cod Matlab -- fragment de fișie
-r},label={lst:s2},firstline=5,lastline=15]{\code/s2.m}[]  
- []
-
-) (chapters/test.tex [9]
-chapter 4.
-) [10
-
-] [11
+] [2]) [3] [4
 
 ] (chapters/notatii.tex
 chapter A.
@@ -2057,7 +1882,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 17--19
 
  []
 
-[12
+[5
 
 ]
 Underfull \hbox (badness 10000) in paragraph at lines 42--43
@@ -2124,7 +1949,7 @@ Underfull \hbox (badness 10000) detected at line 55
 []$\OML/cmm/m/it/10.95 g$\TU/lmr/m/n/10.95 , $[]$ =[]
  []
 
-[13]
+[6]
 Underfull \hbox (badness 7186) detected at line 56
 []$\OMS/cmsy/m/n/10.95 r$\TU/lmr/m/n/10.95 , $\OMS/cmsy/m/n/10.95 r[]$ \TU/lmr/
 m/n/10.95 =[]
@@ -2156,38 +1981,45 @@ Underfull \hbox (badness 10000) detected at line 61
 []$[][]$ \TU/lmr/m/n/10.95 =[]
  []
 
-) (chapters/surse.tex [14]
+) (chapters/surse.tex [7]
 chapter B.
-(code/s1.m) (code/s2.m)) [15
+(code/s1.m) (code/s2.m)) [8
 
 ]
 chapter without number
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 73.
-[16
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 72.
+[9
 
 
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 73.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 72.
  (thesis.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 73.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 73.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 72.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 72.
 
 
-Package biblatex Warning: Please rerun LaTeX.
-(biblatex)                Page breaks have changed.
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package biblatex Warning: Please (re)run BibTeX on the file(s):
+(biblatex)                thesis
+(biblatex)                and rerun LaTeX afterwards.
 
 Package logreq Info: Writing requests to 'thesis.run.xml'.
 \openout1 = `thesis.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 39114 strings out of 427834
- 702478 string characters out of 3147926
- 1312869 words of memory out of 3000000
- 42611 multiletter control sequences out of 15000+200000
- 542322 words of font info for 95 fonts, out of 3000000 for 9000
+ 38994 strings out of 427834
+ 700019 string characters out of 3147926
+ 1311869 words of memory out of 3000000
+ 42514 multiletter control sequences out of 15000+200000
+ 537638 words of font info for 71 fonts, out of 3000000 for 9000
  1328 hyphenation exceptions out of 8191
- 66i,15n,87p,10534b,4714s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 66i,12n,80p,10534b,4494s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on thesis.pdf (22 pages).
+Output written on thesis.pdf (14 pages).

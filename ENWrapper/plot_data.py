@@ -114,6 +114,8 @@ for val in testdata[ELEMENT][2:]:
     X_test.append(residue)
 
 X = np.array(X)
+print(X.shape)
+input("STOP")
 y = np.array(y)
 
 X_test = np.array(X_test)
