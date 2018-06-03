@@ -1,0 +1,40 @@
+TODO:
+    - profile utilizator EPANET - profile nominale si de defect!!! Manualul EPANET/WIKI
+    - comp intre alg genetic si dict learning - articol 
+    - de testat pe retele mai mari EPAGEN 
+    - sa testam pe mai multe exemple - artificiale
+    - de pus in latex punctele cheie - structura schematica
+    - folosit EPANET pentru simul?ri dinamice
+    - functie matlab de conversie Ploturi in imagini pt Latex
+%%
+    - constructie fisier INP din matlab!!!!! exista!?!
+%%
+    - stocarea datelor din EPANET programatic
+    - modificat functii astfel încat sa am toate datele - nu numai val de regim stationar
+    - de pus la punct
+    - daca atunci cand specificam emitterul facem overwrite la base demand sau adauga
+    - ce face exact emitter value`
+    - sa ma uit pe biblioteca Epanet.h 
+    - wrapper
+    
+    %%
+    - de vazut offsetul intre o simulare cu emitter si fara! aditiv vs multiplicativ
+    - pressure si flow - marimi folosite 
+    - mai multe simulari cu variatii la demand ?i emitter
+    - vectorii de reziduuri sa nu fie coliniari
+    
+    
+    %%
+    - sa fac variatii in jurul unei referinte, multiplicatorul s? varieze aleator
+    - script care sa varieze demandul in jurul unei referinte
+    - datele sa fie cat mai bune pentru procesul de antrenare, cat mai realiste
+    - masuratorile sa fie luate pe perioada de timp cand reteaua nu este folosita
+intens de utilizatori (2am - 5am) vezi screenshot, fac media pe acel interval pt fiecare nod
+si apoi aplic algoritmul pe aceste date
+    - de incercat mai multe tipuri de clasificatori; in paper se foloseste un clasificator liniar
+ar merge de exemplu sa incerc o retea neurala svm cu diferite kernel-uri, etc
+
+    - mail pentru o schema cu 100 noduri
+    
+Paul: marti dimineata 
+    

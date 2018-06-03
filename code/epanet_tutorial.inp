@@ -1,0 +1,154 @@
+[TITLE]
+
+
+[JUNCTIONS]
+;ID              	Elev        	Demand      	Pattern         
+ JU1             	0           	-3.85       	                	;
+ JU2             	0           	0           	                	;
+ JU4             	0           	-0.18       	                	;
+ JU5             	0           	0           	                	;
+ JU6             	0           	0           	                	;
+ JU7             	0           	0           	                	;
+ JU8             	0           	-20         	                	;
+ JU9             	0           	0           	                	;
+
+[RESERVOIRS]
+;ID              	Head        	Pattern         
+
+[TANKS]
+;ID              	Elevation   	InitLevel   	MinLevel    	MaxLevel    	Diameter    	MinVol      	VolCurve
+ TA1             	400         	10          	0           	20          	50          	0           	                	;
+
+[PIPES]
+;ID              	Node1           	Node2           	Length      	Diameter    	Roughness   	MinorLoss   	Status
+ PI4             	JU1             	JU4             	150         	12          	100         	0           	Open  	;
+ PI5             	JU4             	JU7             	1000        	12          	100         	0           	Open  	;
+ PI6             	JU1             	JU2             	1000        	12          	100         	0           	Open  	;
+ PI7             	JU4             	JU5             	1000        	12          	100         	0           	Open  	;
+ PI8             	JU7             	JU8             	1000        	12          	100         	0           	Open  	;
+ PI9             	JU2             	JU5             	1000        	12          	100         	0           	Open  	;
+ PI10            	JU5             	JU8             	1000        	12          	100         	0           	Open  	;
+ PI12            	JU5             	JU6             	1000        	12          	100         	0           	Open  	;
+ PI14            	JU6             	JU9             	1000        	12          	100         	0           	Open  	;
+ PI24            	TA1             	JU1             	50          	12          	100         	0           	Open  	;
+
+[PUMPS]
+;ID              	Node1           	Node2           	Parameters
+
+[VALVES]
+;ID              	Node1           	Node2           	Diameter    	Type	Setting     	MinorLoss   
+
+[TAGS]
+
+[DEMANDS]
+;Junction        	Demand      	Pattern         	Category
+
+[STATUS]
+;ID              	Status/Setting
+
+[PATTERNS]
+;ID              	Multipliers
+;RushHour_Retea
+ 1               	1           	1           	1           	2           	3           	4           
+ 1               	12          	12          	13          	12          	10          	9           
+ 1               	8           	8           	7           	7           	6           	8           
+ 1               	10          	11          	5           	4           	2           	1           
+
+[CURVES]
+;ID              	X-Value     	Y-Value
+
+[CONTROLS]
+
+[RULES]
+
+[ENERGY]
+ Global Efficiency  	75
+ Global Price       	0
+ Demand Charge      	0
+
+[EMITTERS]
+;Junction        	Coefficient
+
+[QUALITY]
+;Node            	InitQual
+
+[SOURCES]
+;Node            	Type        	Quality     	Pattern
+
+[REACTIONS]
+;Type     	Pipe/Tank       	Coefficient
+
+
+[REACTIONS]
+ Order Bulk            	1
+ Order Tank            	1
+ Order Wall            	1
+ Global Bulk           	0
+ Global Wall           	0
+ Limiting Potential    	0
+ Roughness Correlation 	0
+
+[MIXING]
+;Tank            	Model
+
+[TIMES]
+ Duration           	0
+ Hydraulic Timestep 	1:00
+ Quality Timestep   	0:05
+ Pattern Timestep   	1:00
+ Pattern Start      	0:00
+ Report Timestep    	1:00
+ Report Start       	0:00
+ Start ClockTime    	12 am
+ Statistic          	None
+
+[REPORT]
+ Status             	No
+ Summary            	No
+ Page               	0
+
+[OPTIONS]
+ Units              	CFS
+ Headloss           	H-W
+ Specific Gravity   	1
+ Viscosity          	1
+ Trials             	40
+ Accuracy           	0.001
+ CHECKFREQ          	2
+ MAXCHECK           	10
+ DAMPLIMIT          	0
+ Unbalanced         	Continue 10
+ Pattern            	1
+ Demand Multiplier  	1.0
+ Emitter Exponent   	0.5
+ Quality            	Chemical mg/L
+ Diffusivity        	1
+ Tolerance          	0.01
+
+[COORDINATES]
+;Node            	X-Coord         	Y-Coord
+ JU1             	943.88          	6462.59         
+ JU2             	5960.88         	6479.59         
+ JU4             	467.69          	4149.66         
+ JU5             	6062.93         	4421.77         
+ JU6             	8698.98         	4489.80         
+ JU7             	671.77          	2176.87         
+ JU8             	6181.97         	2244.90         
+ JU9             	8903.06         	2142.86         
+ TA1             	-2644.56        	8843.54         
+
+[VERTICES]
+;Link            	X-Coord         	Y-Coord
+ PI10            	6215.99         	2142.86         
+
+[LABELS]
+;X-Coord           Y-Coord          Label & Anchor Node
+ -42.52           7636.05          "steavaa"                 
+
+[BACKDROP]
+ DIMENSIONS     	0.00            	0.00            	10000.00        	10000.00        
+ UNITS          	None
+ FILE           	
+ OFFSET         	0.00            	0.00            
+
+[END]

@@ -1,0 +1,56 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\babel@toc {romanian}{}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{Glosar}{iii}{section*.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{List\u {a} de figuri}{iii}{chapter*.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{List\u {a} de tabele}{iv}{chapter*.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{List\u a de algoritmi}{v}{chapter*.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {1}Indicații de redactare}{1}{chapter.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.1}Pagina de titlu}{1}{section.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.2}Introducere}{1}{section.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.3}Formatare}{1}{section.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.4}Dimensiune}{2}{section.1.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.5}Cuprins}{2}{section.1.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.6}Figuri, grafice și tabele}{2}{section.1.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.7}Ecuaţii}{3}{section.1.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.8}Bibliografie}{3}{section.1.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {2}Despre plagiat}{4}{chapter.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {3}Detalii formatare \LaTeX }{5}{chapter.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.1}Exemple comenzi de tip float}{6}{section.3.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.1.1}Tabele}{6}{subsection.3.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.1.2}Figuri}{6}{subsection.3.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.1.3}Algoritmi}{7}{subsection.3.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.2}Lista bibliografică}{7}{section.3.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.3}Localizare: română versus engleză}{8}{section.3.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.4}Diverse}{9}{section.3.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {4}Capitol Test}{10}{chapter.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{Anexe}{12}{section*.13}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {A}Notaţii matematice consacrate}{12}{Anexa.a.A}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {B}Fișiere sursă}{15}{Anexa.a.B}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\nonumberline Bibliografie}{16}{chapter*.14}
