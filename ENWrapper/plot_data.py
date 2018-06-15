@@ -74,7 +74,7 @@ y_test = []
 #
 
 for val in data[ELEMENT][0:]:
-    residue = np.array(val[FEATURE]) - ref
+    residue = (np.array(val[FEATURE]) - ref)/ref
     # plt.figure()
     # plt.plot(residue, marker='x')
     # plt.title("Demand in node {} with emitter {}".format(val["EMITTER_NODE"], val["EMITTER_VAL"]))
@@ -91,7 +91,6 @@ for val in data[ELEMENT][0:]:
     #residue = normalize(residue, axis=1)
     residue = np.mean(residue, axis=0)
 
-
     X.append(residue)
 
 
@@ -100,7 +99,7 @@ for val in testdata[ELEMENT][2:]:
     # plt.plot(np.array(val["EN_PRESSURE"]) - ref)
     # plt.title("Demand in node {} with emitter {}".format(val["EMITTER_NODE"], val["EMITTER_VAL"]))
 
-    residue = np.array(val[FEATURE]) - ref
+    residue = (np.array(val[FEATURE]) - ref)/ref
     residue = residue[:, nodes]
     y_test.append(val["EMITTER_NODE"])
 
@@ -115,7 +114,6 @@ for val in testdata[ELEMENT][2:]:
 
 X = np.array(X)
 print(X.shape)
-input("STOP")
 y = np.array(y)
 
 X_test = np.array(X_test)
@@ -132,11 +130,11 @@ X = np.squeeze(X, 0)
 
 
 # network = nn(hidden_layer_sizes=(100,), activation='relu', warm_start=True, verbose=True)
-# svm = SVC(kernel='linear',C=2.5,verbose=True, max_iter=200)
+svm = SVC(kernel='linear',C=2.5,verbose=True, max_iter=200)
 
-logreg = LogisticRegression(solver='liblinear', max_iter=1500, dual=True, C=1, multi_class='ovr', verbose=True)
-# svm.fit(X, y)
-logreg.fit(X, y)
+# logreg = LogisticRegression(solver='liblinear', max_iter=1500, dual=True, C=1, multi_class='ovr', verbose=True)
+svm.fit(X, y)
+# logreg.fit(X, y)
 feature_names = ["node" + str(no) for no in range(0, 31)]
 
 def f_importances(coef, names):
@@ -154,14 +152,14 @@ for epoch in range(1500):
 
 
 # weights = svm.coef_
-log_weights = logreg.coef_
+# log_weights = logreg.coef_
 
-print("Log weights - ", np.shape(log_weights))
-print("Log score : ", logreg.score(X_test,y_test))
-plt.plot(log_weights[0,:], marker='o', label='fault at 0')
-plt.plot(log_weights[1,:], marker='o', label='fault at 1')
-plt.plot(log_weights[2,:], marker='o', label='fault at 2')
-plt.plot(log_weights[3,:], marker='o', label='fault at 3')
+# print("Log weights - ", np.shape(log_weights))
+# print("Log score : ", logreg.score(X_test,y_test))
+# plt.plot(log_weights[0,:], marker='o', label='fault at 0')
+# plt.plot(log_weights[1,:], marker='o', label='fault at 1')
+# plt.plot(log_weights[2,:], marker='o', label='fault at 2')
+# plt.plot(log_weights[3,:], marker='o', label='fault at 3')
 plt.legend()
 plt.show()
 
