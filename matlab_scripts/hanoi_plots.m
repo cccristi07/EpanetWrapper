@@ -45,8 +45,6 @@ max_val = max_val';
 t = 1:length(min_val);
 patch([t t(end:-1:1)], [min_val, max_val(end:-1:1)], 'b')
 
-
-
 %% noduri afectate de diferite defecte
 %nodul 7 afectat de defectel 7, 17, 25
 emitter_node = 25;
@@ -82,11 +80,7 @@ end
 legend(legs)
 
 
-
-    
-
-
-%% reziduu absolut
+%% rez absolut
 for i = 2:496
     
     vals = train_data.NODE_VALUES{i}.EN_PRESSURE;
@@ -102,7 +96,7 @@ for i = 2:496
     
 end
 
-%% reziduu relativ
+%% rez relativ
 for i = 2:496
     
     vals = train_data.NODE_VALUES{i}.EN_PRESSURE;
@@ -117,14 +111,14 @@ for i = 2:496
     pause(0.1)
     
 end
-%% reziduu standardizat (x - mean(x)) / std(x)
+%% rez standardizat (x - mean(x)) / std(x)
 for i = 2:496
     
     vals = test2_data.NODE_VALUES{i}.EN_PRESSURE;
     emitter_node = test2_data.NODE_VALUES{i}.EMITTER_NODE;
     emitter_vals = test2_data.NODE_VALUES{i}.EMITTER_VAL;
-    rez = (vals - ref_pressure);
-    rez = bsxfun(@minus, rez, mean(reziduu, 1));
+    rez = (vals - ref_pressure)./ref_pressure;
+    rez = bsxfun(@minus, rez, mean(rez, 1));
     rez = bsxfun(@rdivide, rez, std(rez, 1));
     plot(rez)
     xlabel('Timp(*15min)')
@@ -135,7 +129,7 @@ for i = 2:496
     
 end
 
-%% reziduu cu normalizare pe coloane
+%% rez cu normalizare pe coloane
 for i = 2:496
     
     vals = train_data.NODE_VALUES{i}.EN_PRESSURE;
@@ -152,7 +146,7 @@ for i = 2:496
     
 end
 
-%% medie pe timp a reziduului absolut
+%% medie pe timp a rezlui absolut
 for i = 2:496
     
     vals = train_data.NODE_VALUES{i}.EN_PRESSURE;
@@ -168,30 +162,13 @@ for i = 2:496
     pause(0.1)
     
 end
-%% medie pe timp a reziduului relativ
+%% medie pe timp a rezlui relativ
 for i = 2:496
     
     vals = train_data.NODE_VALUES{i}.EN_PRESSURE;
     emitter_node = train_data.NODE_VALUES{i}.EMITTER_NODE;
     emitter_vals = train_data.NODE_VALUES{i}.EMITTER_VAL;
-    rez = (mean(vals) - mean(ref_pressure))./mean(ref_pressure);
-    plot(rez, 'bx')
-    xlabel('Timp(*15min)')
-    ylabel('Presiunea din noduri mH2O')
-    title(sprintf('emitter in %d vals %d',emitter_node, emitter_vals)) 
-%     legend(leg)
-    pause(0.1)
-    
-end
-%% medie pe timp a reziduului standardizat
-for i = 2:496
-    
-    vals = train_data.NODE_VALUES{i}.EN_PRESSURE;
-    emitter_node = train_data.NODE_VALUES{i}.EMITTER_NODE;
-    emitter_vals = train_data.NODE_VALUES{i}.EMITTER_VAL;
-    rez = (vals - ref_pressure);
-    rez = bsxfun(@minus, rez, mean(reziduu, 1));
-    rez = bsxfun(@rdivide, rez, std(rez, 1));
+    rez = ((vals) - (ref_pressure))./(ref_pressure);
     rez = mean(rez(1:35,:));
     plot(rez, 'bx')
     xlabel('Timp(*15min)')
@@ -201,14 +178,52 @@ for i = 2:496
     pause(0.1)
     
 end
-%% medie pe timp a reziduului normalizat pe col
+
+%% emitter de 25 in toate nodurile 
+
+emitters = [15];
+for i = 1:length(emitters)
+    figure
+    hold on
+    for node = 2:31
+        vals = get_emitter_vals(train_data.NODE_VALUES, emitters(i), node);
+        vals = vals.EN_PRESSURE;
+        rez = (mean(vals) - mean(ref_pressure))./mean(ref_pressure);
+        plot(rez);
+    end
+end
+
+%% calculam matricea de rezri R pentru dict learning
+thresh_hold = 0.05; % pentru rez absolut ales ochiometric
+R = [];
+%% medie pe timp a rezlui standardizat
 for i = 2:496
     
     vals = train_data.NODE_VALUES{i}.EN_PRESSURE;
     emitter_node = train_data.NODE_VALUES{i}.EMITTER_NODE;
     emitter_vals = train_data.NODE_VALUES{i}.EMITTER_VAL;
     rez = (vals - ref_pressure);
-    rez = bsxfun(@minus, rez, mean(reziduu, 1));
+    med = mean(rez, 1);
+    dev = std(rez, 1);
+    rez = bsxfun(@minus, rez, med);
+    rez = bsxfun(@rdivide, rez, dev);
+    rez = mean(rez(1:35,:));
+    plot(rez, 'bx')
+    xlabel('Timp(*15min)')
+    ylabel('Presiunea din noduri mH2O')
+    title(sprintf('emitter in %d vals %d',emitter_node, emitter_vals)) 
+%     legend(leg)
+    pause(0.1)
+    
+end
+%% medie pe timp a rezlui normalizat pe col
+for i = 2:496
+    
+    vals = train_data.NODE_VALUES{i}.EN_PRESSURE;
+    emitter_node = train_data.NODE_VALUES{i}.EMITTER_NODE;
+    emitter_vals = train_data.NODE_VALUES{i}.EMITTER_VAL;
+    rez = (vals - ref_pressure);
+    rez = bsxfun(@minus, rez, mean(rez, 1));
     rez = bsxfun(@rdivide, rez, std(rez, 1));
     rez = mean(rez(1:35,:));
     plot(rez, 'bx')
@@ -238,18 +253,48 @@ for i=1:496
     
 end
 
+%% plotare features auxiliare EN_DEMAND & EN_VELOCITY
+% pentru nodurile 5, 11, 17, 27
+% pentru pipes 5, 12, 15, 19
+nodes = [5, 11, 17, 27];
+pipes = [5, 10, 15, 25];
+pipe_legend = {};
+for i = 1:length(pipes)
+    pipe_legend{i} = sprintf('PIPE %d', pipes(i));
+end
 
+figure
+plot(ref_velocity(:, pipes))
+xlabel('Timp(*15min)')
+ylabel('Viteza(m/s)')
+legend(pipe_legend)
+
+savefig('C:\Users\Cristian\Desktop\LICENTA\cristian_cazan\LicentaLatex\pics\figs\ref_velocities.fig')
+matlab2tikz('C:\Users\Cristian\Desktop\LICENTA\cristian_cazan\LicentaLatex\pics\tikz_files\ref_velocities.tikz')
+
+node_legend = {};
+for i = 1:length(nodes)
+    node_legend{i} = sprintf('NODE %d', nodes(i));
+end
+
+figure
+plot(ref_demand(:, nodes))
+xlabel('Timp(*15min)')
+ylabel('Demand(L/s)')
+legend(node_legend)
+savefig('C:\Users\Cristian\Desktop\LICENTA\cristian_cazan\LicentaLatex\pics\figs\ref_demands.fig')
+matlab2tikz('C:\Users\Cristian\Desktop\LICENTA\cristian_cazan\LicentaLatex\pics\tikz_files\ref_demands.tikz')
 %% TODO-uri
-% ploturi reziduu absolut
+% ploturi rez absolut
 % pentru acelasi nod i toate fault-urile care il afecteaza
 % pentru fiecare nod sa plotez cum e afectat e un anumita magnitudine a
 % defectului "plimbata" in fiecare nod
 % de plotat toate ploturile pe acelasi grafic - test
-% la fel pentru reziduu relativ
+% la fel pentru rez relativ
 %
 % analizat cazul cu velocity vs demand vs pressure - absolut vs relativ
-% reziduu filtrat pe suma de x elemente
-% sau reziduu într-un anumit moment de timp i.e. fara suma
+% rez filtrat pe suma de x elemente
+% sau rez într-un anumit moment de timp i.e. fara suma
 %
 % ce se intampla daca variez demand-ul? 
 %
@@ -280,4 +325,4 @@ end
 % 
 % save fault_sign
     
-    
+  
