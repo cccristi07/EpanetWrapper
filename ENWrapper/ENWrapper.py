@@ -392,7 +392,7 @@ if __name__ == '__main__':
 
     intense_leak = [35, 40, 50, 60, 100]
 
-    nodes = list(range(1, 32))
+    nodes = list(range(1, ))
 
     emitter_test = [ (node, val) for node in nodes for val in test_vals]
     emitter_train = [(node, val) for node in nodes for val in train_vals]
