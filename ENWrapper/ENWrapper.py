@@ -10,7 +10,6 @@ from plotly.graph_objs import *
 # plotting imports
 from plotly.offline import plot
 
-
 # extending the EPANetSimulation class to ease acces to
 # simulation routines
 class ENSim(EPANetSimulation):
@@ -25,6 +24,9 @@ class ENSim(EPANetSimulation):
         if self.network.nodes[node_index].node_type is EN_JUNCTION:
             ENSim._getncheck(self.ENsetnodevalue(node_index, EN_EMITTER, emitter_val))
 
+    def set_basedemand(self, node_index, demand_val):
+        if self.network.nodes[node_index].node_type is EN_JUNCTION:
+            ENSim._getncheck(self.ENsetnodevalue(node_index, EN_BASEDEMAND, demand_val))
 
     def set_emitters(self, emitter_info=None):
 
@@ -382,7 +384,7 @@ def run_simulation(network, pdd, query_dict):
         })
     return ret_vals
 
-
+#TODO metoda pentru modificarea demand-ului pe nod!!!
 if __name__ == '__main__':
     es = ENSim("data/hanoi.inp", pdd=False)
 
@@ -435,13 +437,9 @@ if __name__ == '__main__':
 
     }
 
-    data_train = es.query_network(train_dataset)
-    es.save_data("train_set.json")
-    data_test = es.query_network(test_dataset)
-    es.save_data("test_set.json")
+    # data_train = es.query_network(train_dataset)
+    # es.save_data("train_set.json")
+    # data_test = es.query_network(test_dataset)
+    # es.save_data("test_set.json")
     data_test2 = es.query_network(test2_dataset)
-    es.save_data("test2_set.json")
-
-
-
-
+    # es.save_data("test2_set.json")

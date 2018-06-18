@@ -27,5 +27,5 @@ function [p, ptrans] = all_junctions_get_pressure(n)
         tstep=matlabENnextH();
         itrans = itrans + 1;
     end
-    p = ptrans(:,end);  % final pressure values
+    p = mean(ptrans(:,1:33),2);  % final pressure values
 end

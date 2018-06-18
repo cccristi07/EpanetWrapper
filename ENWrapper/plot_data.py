@@ -6,6 +6,7 @@ from sklearn.neural_network import MLPClassifier as nn
 from sklearn.preprocessing import normalize
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
+from sklearn.decomposition import DictionaryLearning
 
 # TODO:
 # cplex, gurobi, mosek - programe implementate in C solvere - Python matlab etc.
@@ -32,7 +33,7 @@ from sklearn.decomposition import MiniBatchDictionaryLearning, DictionaryLearnin
 
 
 # ascending order of nodes -SVM Linear
-
+dl = DictionaryLearning(n_components=50, )
 nodes = [30, 25, 15, 26, 11, 27, 22,  3, 19, 13, 10,  1,  7,  4, 12, 23,  0,  6, 20,  9, 14, 21, 18,  5, 8,  2, 24, 17, 16, 28, 29]
 nodes = list(range(1,31))
 
@@ -74,24 +75,24 @@ y_test = []
 #
 
 for val in data[ELEMENT][0:]:
-    residue = np.array(val[FEATURE]) - ref
+    residue = (np.array(val[FEATURE]) - ref)
     # plt.figure()
     # plt.plot(residue, marker='x')
     # plt.title("Demand in node {} with emitter {}".format(val["EMITTER_NODE"], val["EMITTER_VAL"]))
     # plt.show()
 
 
-    residue = residue[:, nodes]
+    residue = residue[:, :]
     y.append(val["EMITTER_NODE"])
 
     # we take the values where the system is stationary
     residue = residue[1:35]
 
+
     #normalization
-    #residue = normalize(residue, axis=1)
+    # residue = normalize(residue, axis=1)
+    # mean
     residue = np.mean(residue, axis=0)
-
-
     X.append(residue)
 
 
@@ -100,43 +101,50 @@ for val in testdata[ELEMENT][2:]:
     # plt.plot(np.array(val["EN_PRESSURE"]) - ref)
     # plt.title("Demand in node {} with emitter {}".format(val["EMITTER_NODE"], val["EMITTER_VAL"]))
 
-    residue = np.array(val[FEATURE]) - ref
-    residue = residue[:, nodes]
+    residue = (np.array(val[FEATURE]) - ref)
+    residue = residue[:, :]
     y_test.append(val["EMITTER_NODE"])
 
     # we take the values where the system is stationary
     residue = residue[1:35]
+
     # normalization
-    #residue = normalize(residue, axis=1)
+    # residue = normalize(residue, axis=1)
     # mean
     residue = np.mean(residue, axis=0)
+
 
     X_test.append(residue)
 
 X = np.array(X)
 print(X.shape)
-input("STOP")
 y = np.array(y)
 
 X_test = np.array(X_test)
 y_test = np.array(y_test)
 
-shuffle = np.random.shuffle(list(range(1, len(y))))
+shuffle = list(range(1, len(y)))
+np.random.shuffle(shuffle)
 print(shuffle)
 X = X[shuffle]
 y = y[shuffle]
 
-y = np.squeeze(y, 0)
-X = np.squeeze(X, 0)
+y = np.squeeze(y)
+X = np.squeeze(X)
+
+y_test = np.squeeze(y_test)
+X_test = np.squeeze(X_test)
 
 
 
 # network = nn(hidden_layer_sizes=(100,), activation='relu', warm_start=True, verbose=True)
-# svm = SVC(kernel='linear',C=2.5,verbose=True, max_iter=200)
-
-logreg = LogisticRegression(solver='liblinear', max_iter=1500, dual=True, C=1, multi_class='ovr', verbose=True)
-# svm.fit(X, y)
-logreg.fit(X, y)
+svm = SVC(kernel='linear',C=10.5,verbose=True, max_iter=-1)
+dl.fit(X, )
+X = dl.transform(X)
+X_test = dl.transform(X_test)
+# logreg = LogisticRegression(solver='liblinear', max_iter=1500, dual=True, C=1, multi_class='ovr', verbose=True)
+svm.fit(X, y)
+# logreg.fit(X, y)
 feature_names = ["node" + str(no) for no in range(0, 31)]
 
 def f_importances(coef, names):
@@ -148,43 +156,43 @@ def f_importances(coef, names):
 
 
 
-for epoch in range(1500):
-    #network.fit(X, y)
-    pass
+# for epoch in range(1500):
+#     #network.fit(X, y)
+#     pass
 
 
 # weights = svm.coef_
-log_weights = logreg.coef_
+# log_weights = logreg.coef_
 
-print("Log weights - ", np.shape(log_weights))
-print("Log score : ", logreg.score(X_test,y_test))
-plt.plot(log_weights[0,:], marker='o', label='fault at 0')
-plt.plot(log_weights[1,:], marker='o', label='fault at 1')
-plt.plot(log_weights[2,:], marker='o', label='fault at 2')
-plt.plot(log_weights[3,:], marker='o', label='fault at 3')
-plt.legend()
-plt.show()
+# print("Log weights - ", np.shape(log_weights))
+# print("Log score : ", logreg.score(X_test,y_test))
+# plt.plot(log_weights[0,:], marker='o', label='fault at 0')
+# plt.plot(log_weights[1,:], marker='o', label='fault at 1')
+# plt.plot(log_weights[2,:], marker='o', label='fault at 2')
+# plt.plot(log_weights[3,:], marker='o', label='fault at 3')
+# plt.legend()
+# plt.show()
 
 
 # print("SVM weights shape ", np.shape(weights))
 
-node_importance = np.sum(np.absolute(log_weights), axis=0)
-node_importance = node_importance / np.linalg.norm(node_importance)
-f_importances(node_importance, feature_names)
+# node_importance = np.sum(np.absolute(log_weights), axis=0)
+# node_importance = node_importance / np.linalg.norm(node_importance)
+# f_importances(node_importance, feature_names)
 
 
 # imp_nodes = np.argsort(node_importance)
 # print(imp_nodes)
 
-# y_pred = svm.predict(X_test)
+y_pred = svm.predict(X_test)
 
-# y_pred = y_pred - y_test
-# corect = len([ x for x in y_pred if x == 0])
-# acc = corect / len(y_pred)
+y_pred = y_pred - y_test
+corect = len([ x for x in y_pred if x == 0])
+acc = corect / len(y_pred)
 
-# print("Test accuracy is {}%".format(acc*100))
+print("Test accuracy is {}%".format(acc*100))
 # plt.plot(np.log(node_importance), 'rx')
 # plt.show()
-
+print(svm.score(X_test, y_test))
 # TODO add dictionary learning method
 # TODO set covering problem
