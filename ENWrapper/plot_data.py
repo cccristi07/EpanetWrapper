@@ -5,8 +5,18 @@ import numpy as np
 from sklearn.neural_network import MLPClassifier as nn
 from sklearn.preprocessing import normalize
 from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
+from sklearn.neighbors import KNeighborsClassifier as KNN
+from sklearn.cluster import KMeans
+from sklearn.manifold import t_sne
+from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.decomposition import DictionaryLearning
+from sklearn.linear_model import OrthogonalMatchingPursuit as omp
+
+from sklearn.feature_selection import RFE
+import gc
 
 # TODO:
 # cplex, gurobi, mosek - programe implementate in C solvere - Python matlab etc.
@@ -33,7 +43,8 @@ from sklearn.decomposition import MiniBatchDictionaryLearning, DictionaryLearnin
 
 
 # ascending order of nodes -SVM Linear
-dl = DictionaryLearning(n_components=50, )
+dl = DictionaryLearning(n_components=150,
+                        transform_n_nonzero_coefs=4)
 nodes = [30, 25, 15, 26, 11, 27, 22,  3, 19, 13, 10,  1,  7,  4, 12, 23,  0,  6, 20,  9, 14, 21, 18,  5, 8,  2, 24, 17, 16, 28, 29]
 nodes = list(range(1,31))
 
@@ -90,7 +101,7 @@ for val in data[ELEMENT][0:]:
 
 
     #normalization
-    # residue = normalize(residue, axis=1)
+    residue = normalize(residue, axis=1)
     # mean
     residue = np.mean(residue, axis=0)
     X.append(residue)
@@ -109,7 +120,7 @@ for val in testdata[ELEMENT][2:]:
     residue = residue[1:35]
 
     # normalization
-    # residue = normalize(residue, axis=1)
+    residue = normalize(residue, axis=1)
     # mean
     residue = np.mean(residue, axis=0)
 
@@ -125,7 +136,6 @@ y_test = np.array(y_test)
 
 shuffle = list(range(1, len(y)))
 np.random.shuffle(shuffle)
-print(shuffle)
 X = X[shuffle]
 y = y[shuffle]
 
@@ -134,16 +144,71 @@ X = np.squeeze(X)
 
 y_test = np.squeeze(y_test)
 X_test = np.squeeze(X_test)
+del data
+del testdata
+del json_str
+
+# plot data in 2 dimensions
+# de plotat pentru emitter + demand variat
+# ce se intampla
+# ce reprezinta axele
+# o mica discute in legatura cu algoritmii alesi
+pca = PCA(n_components=2)
+perplex = [5, 30]
+for p in perplex:
+    tsne = t_sne.TSNE(perplexity=p)
+    X_red = tsne.fit_transform(X)
+    print(X_red.shape)
+    plt.scatter(X_red[:,0], X_red[:, 1], c=y )
+    plt.show()
 
 
 
 # network = nn(hidden_layer_sizes=(100,), activation='relu', warm_start=True, verbose=True)
-svm = SVC(kernel='linear',C=10.5,verbose=True, max_iter=-1)
-dl.fit(X, )
-X = dl.transform(X)
-X_test = dl.transform(X_test)
+svm_rfe = SVC(kernel='linear',C=10.5,verbose=False, max_iter=-1)
+
+
+rfe = RFE(estimator=svm_rfe, n_features_to_select=1, step=1)
+rfe.fit(X, y)
+print("RFE SVM score is", rfe.score(X_test, y_test))
+ranking = rfe.ranking_
+print(ranking.shape)
+
+# pt sel de senzori folosim toate datele
+#
+
+
+
+plt.stem(ranking)
+plt.title('ranking of each node')
+plt.show()
+svm = SVC(kernel='linear', C=10.5, verbose=False, max_iter=-1)
+rf = RandomForestClassifier(n_estimators=10,)
+ab = AdaBoostClassifier()
+gb = GradientBoostingClassifier()
+dt = DecisionTreeClassifier()
+gb.fit(X, y)
+ab.fit(X, y)
+rf.fit(X, y)
+dt.fit(X, y)
+print("RF score is ", rf.score(X_test, y_test))
+print("Adaboost score is ", ab.score(X_test, y_test))
+print("GradientBoost score is ", gb.score(X_test, y_test))
+print("DecTree score is ", dt.score(X_test, y_test))
+dl1 = DictionaryLearning()
+Xd = dl.fit_transform(X, )
+Xd_test = dl.transform(X_test)
+D = dl.components_
+print(D.shape)
+
+
+
 # logreg = LogisticRegression(solver='liblinear', max_iter=1500, dual=True, C=1, multi_class='ovr', verbose=True)
-svm.fit(X, y)
+svm.fit(Xd, y)
+rf.fit(Xd, y)
+ab.fit(Xd, y)
+dt.fit(Xd, y)
+gb.fit(Xd, y)
 # logreg.fit(X, y)
 feature_names = ["node" + str(no) for no in range(0, 31)]
 
@@ -184,15 +249,16 @@ def f_importances(coef, names):
 # imp_nodes = np.argsort(node_importance)
 # print(imp_nodes)
 
-y_pred = svm.predict(X_test)
-
-y_pred = y_pred - y_test
-corect = len([ x for x in y_pred if x == 0])
-acc = corect / len(y_pred)
-
-print("Test accuracy is {}%".format(acc*100))
 # plt.plot(np.log(node_importance), 'rx')
 # plt.show()
-print(svm.score(X_test, y_test))
+print("SVM_DL Score is", svm.score(Xd_test, y_test))
+print("RF_DL score is ", rf.score(Xd_test, y_test))
+print("GB_DL score is", gb.score(Xd_test, y_test))
+print("AB_DL score is", ab.score(Xd_test, y_test))
+print("DT_DL score is", dt.score(Xd_test, y_test))
 # TODO add dictionary learning method
 # TODO set covering problem
+
+
+
+#min alpha*|| H - W*X || + ||Ri - D*x||
