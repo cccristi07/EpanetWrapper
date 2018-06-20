@@ -1,6 +1,5 @@
 clear; clc;
 
-
 %% load all necesary data
 libjson_path = 'C:\Users\Cristian\Desktop\LICENTA\jsonlab-master';
 train_data_path = 'C:\Users\Cristian\Desktop\LICENTA\cristian_cazan\EpanetWrapper\ENWrapper\train_set.json';

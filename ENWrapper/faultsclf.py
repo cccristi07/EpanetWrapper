@@ -4,7 +4,6 @@ from sklearn.linear_model import LogisticRegressionCV
 from sklearn.decomposition import DictionaryLearning, NMF, PCA
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.preprocessing import scale, normalize
-from sklearn.metrics.pairwise import euclidean_distances as ed
 from sklearn.model_selection import GridSearchCV
 from ENWrapper import  ENSim
 from matplotlib import pyplot as plt
@@ -22,6 +21,7 @@ TEST_PATH = 'test_set.json'
 TEST2_PATH = 'test2_set.json'
 
 class FaultClassifier(object):
+    REGION = list(range(2, 25))
 
     def __init__(self, estimator, train_dataset_path=None, test_dataset_path=None, network_file='data/hanoi.inp',
                  feature_extraction=ResidualType.ABSOLUTE):
@@ -167,8 +167,8 @@ class FaultClassifier(object):
 if __name__ == '__main__':
 
 
-    svm = SVC(kernel='linear', C=2.5, verbose=False)
+    svm = SVC(kernel='linear', C=10, verbose=False, class_weight='balanced', )
 
-    clf = FaultClassifier(svm, TRAIN_PATH, TEST_PATH, feature_extraction=ResidualType.ABSOLUTE )
+    clf = FaultClassifier(svm, TRAIN_PATH, TEST_PATH, feature_extraction=ResidualType.ABSOLUTE)
     clf.train_model()
     clf.get_scores()

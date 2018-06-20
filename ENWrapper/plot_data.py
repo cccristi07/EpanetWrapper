@@ -14,7 +14,7 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.decomposition import DictionaryLearning
 from sklearn.linear_model import OrthogonalMatchingPursuit as omp
-
+from sklearn.model_selection import GridSearchCV
 from sklearn.feature_selection import RFE
 import gc
 
@@ -43,8 +43,12 @@ from sklearn.decomposition import MiniBatchDictionaryLearning, DictionaryLearnin
 
 
 # ascending order of nodes -SVM Linear
-dl = DictionaryLearning(n_components=150,
-                        transform_n_nonzero_coefs=4)
+dl = DictionaryLearning(n_components=256,
+                        transform_n_nonzero_coefs=4,
+                        )
+# ma intereseaza sa fie clasificarea buna, nu neap raritatea dictionarului
+# X = D * V
+
 nodes = [30, 25, 15, 26, 11, 27, 22,  3, 19, 13, 10,  1,  7,  4, 12, 23,  0,  6, 20,  9, 14, 21, 18,  5, 8,  2, 24, 17, 16, 28, 29]
 nodes = list(range(1,31))
 
@@ -66,12 +70,15 @@ with open("test_set.json") as f:
 testdata = json.loads(json_str)
 
 
-
+time_span = list(range(1,55))
 X = []
 y = []
 
 X_test = []
 y_test = []
+
+def residual(measured, ref):
+    return (np.mean(measured[time_span], axis=0) - np.mean(ref[time_span], axis=0))
 
 #TODO:
 #
@@ -84,48 +91,46 @@ y_test = []
 #
 #
 #
-
+X_tsne = []
+y_tsne = []
 for val in data[ELEMENT][0:]:
-    residue = (np.array(val[FEATURE]) - ref)
-    # plt.figure()
-    # plt.plot(residue, marker='x')
-    # plt.title("Demand in node {} with emitter {}".format(val["EMITTER_NODE"], val["EMITTER_VAL"]))
-    # plt.show()
+    measured = np.array(val[FEATURE])
+    residue = measured - ref
 
-
-    residue = residue[:, :]
-    y.append(val["EMITTER_NODE"])
 
     # we take the values where the system is stationary
-    residue = residue[1:35]
+    residue = residue[time_span]
+
 
 
     #normalization
     residue = normalize(residue, axis=1)
-    # mean
+    #mean
     residue = np.mean(residue, axis=0)
+    residue = residual(ref, measured)
+
+
     X.append(residue)
+    y.append(val["EMITTER_NODE"])
 
 
 for val in testdata[ELEMENT][2:]:
-    # plt.figure()
-    # plt.plot(np.array(val["EN_PRESSURE"]) - ref)
-    # plt.title("Demand in node {} with emitter {}".format(val["EMITTER_NODE"], val["EMITTER_VAL"]))
+    measured = np.array(val[FEATURE])
+    residue = measured - ref
 
-    residue = (np.array(val[FEATURE]) - ref)
-    residue = residue[:, :]
-    y_test.append(val["EMITTER_NODE"])
 
     # we take the values where the system is stationary
-    residue = residue[1:35]
+    residue = residue[time_span]
 
     # normalization
     residue = normalize(residue, axis=1)
     # mean
     residue = np.mean(residue, axis=0)
-
+    residue = residual(ref, measured)
 
     X_test.append(residue)
+    y_test.append(val["EMITTER_NODE"])
+
 
 X = np.array(X)
 print(X.shape)
@@ -138,15 +143,14 @@ shuffle = list(range(1, len(y)))
 np.random.shuffle(shuffle)
 X = X[shuffle]
 y = y[shuffle]
-
+X = normalize(X)
+X_test = normalize(X_test)
 y = np.squeeze(y)
 X = np.squeeze(X)
 
 y_test = np.squeeze(y_test)
 X_test = np.squeeze(X_test)
-del data
-del testdata
-del json_str
+
 
 # plot data in 2 dimensions
 # de plotat pentru emitter + demand variat
@@ -154,15 +158,18 @@ del json_str
 # ce reprezinta axele
 # o mica discute in legatura cu algoritmii alesi
 pca = PCA(n_components=2)
-perplex = [5, 30]
-for p in perplex:
-    tsne = t_sne.TSNE(perplexity=p)
-    X_red = tsne.fit_transform(X)
-    print(X_red.shape)
-    plt.scatter(X_red[:,0], X_red[:, 1], c=y )
-    plt.show()
+# perplex = [5, 30]
+# for p in perplex:
+#     # plot only for emitters in node 11 and 17
+#     tsne = t_sne.TSNE(perplexity=p)
+#     X_red = tsne.fit_transform(X)
+#     print(X_red.shape)
+#     plt.scatter(X_red[:,0], X_red[:, 1], c=y)
+#     plt.show()
 
-
+del data
+del testdata
+del json_str
 
 # network = nn(hidden_layer_sizes=(100,), activation='relu', warm_start=True, verbose=True)
 svm_rfe = SVC(kernel='linear',C=10.5,verbose=False, max_iter=-1)
@@ -177,8 +184,11 @@ print(ranking.shape)
 # pt sel de senzori folosim toate datele
 #
 
-
-
+param_grid = [
+  {'C': [1, 5, 10, 15, 25, 50, 100, 1000], 'kernel': ['linear'], 'class_weight': ['balanced', None]},
+  {'C': [1, 10, 15, 25, 50, 100, 1000], 'gamma': [0.001, 0.0001, 0.01, 0.00001], 'kernel': ['rbf'] , 'class_weight':['balanced', None]},
+ ]
+gs = GridSearchCV(SVC(), param_grid=param_grid, )
 plt.stem(ranking)
 plt.title('ranking of each node')
 plt.show()
@@ -201,6 +211,7 @@ Xd_test = dl.transform(X_test)
 D = dl.components_
 print(D.shape)
 
+# de folosit functiile de Dict learning din repo-ul de git
 
 
 # logreg = LogisticRegression(solver='liblinear', max_iter=1500, dual=True, C=1, multi_class='ovr', verbose=True)

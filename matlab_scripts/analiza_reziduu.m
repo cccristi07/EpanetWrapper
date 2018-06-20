@@ -19,26 +19,53 @@ leg = {};
 for i = 1:31
     leg{i} = sprintf('NODE %d', i);
 end
-
+%% reziduu 
 %% reziduu relativ - medie pe timp
 % aleg un emitter standard de 15 pentru a crea matricea de Reziduuri R care
 % are dimensiunile (n_faults, n_nodes) n_faults reprezinta emitter_ul
 % simulat în fiecare nod al retelei
-emitter_val = 23;
+emitter_val = 25;
+emitter_nodes = [11, 17, 21, 27];
 node_vals = train_data.NODE_VALUES;
 pipe_vals = train_data.LINK_VALUES;
-figure(1)
-hold on
-for i = 2:31
+for i = 1:length(emitter_nodes)
     
-    sim_vals = get_emitter_vals(node_vals, emitter_val, i);
+    sim_vals = get_emitter_vals(node_vals, emitter_val, emitter_nodes(i));
     measured_pressure = sim_vals.EN_PRESSURE;
     scores = abs_residual(ref_pressure, measured_pressure);
-    rez = mean(scores(1:35, :));
+    rez = normc(scores);
+    rez = mean(rez(5:20, :));
+    
+    figure
+    plot(rez, 'bx');
+    xlabel('Nod')
+    savefig(sprintf('atem_res_emitter%d_mag%d', emitter_nodes(i),emitter_val));
+    matlab2tikz(sprintf('atem_res_emitter%d_mag%d.tikz', emitter_nodes(i),emitter_val))
+end
+%% reziduu timp normalizare coloane
+% nodurile [11, 17, 21]
+% emitter  [ 5, 15 ,29]
+nodes = [27];
+emitter = 29;
+nodes2plot = [5, 11, 15, 17, 21, 27];
+l = {};
+for i = 1:length(nodes2plot)
+    l{i} = sprintf('Node %d', nodes2plot(i));
+end
+for i = 1:length(nodes)
+    sim_vals = get_emitter_vals(node_vals, 29, nodes(i));
+    measured_pressure = sim_vals.EN_PRESSURE(:, nodes2plot);
+    scores = abs_residual(ref_pressure(:, nodes2plot), measured_pressure);
+%     rez = mean(scores(5:20, :));
+    rez = normc(scores);
+    figure
+    plot(rez);
+    xlabel('Timp(*15min)')
+    ylabel('Reziduu presiune(mH2O)')
+    legend(l, 'Location', 'southeast')
+    savefig(sprintf('time_res_emitter%d_mag29', nodes(i)));
+    matlab2tikz(sprintf('time_res_emitter%d_mag29.tikz', nodes(i)))
 
-    plot(rez, 'x');
-    title(sprintf('emitter in node %d', i))
-    pause(0.25)
+%     legend(leg)    
 end
 
-    
