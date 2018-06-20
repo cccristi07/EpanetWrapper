@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.neural_network import MLPClassifier as nn
 from sklearn.preprocessing import normalize
 from sklearn.svm import SVC
+from sklearn.svm import NuSVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier as KNN
@@ -49,14 +50,13 @@ dl = DictionaryLearning(n_components=256,
 # ma intereseaza sa fie clasificarea buna, nu neap raritatea dictionarului
 # X = D * V
 
-nodes = [30, 25, 15, 26, 11, 27, 22,  3, 19, 13, 10,  1,  7,  4, 12, 23,  0,  6, 20,  9, 14, 21, 18,  5, 8,  2, 24, 17, 16, 28, 29]
-nodes = list(range(1,31))
+nodes = list(range(1,32))
 
 ELEMENT = "NODE_VALUES"
 FEATURE = "EN_PRESSURE"
 
 
-with open("train_set.json") as f:
+with open("data/train_set.json") as f:
     json_str = f.read()
 
 data = json.loads(json_str)
@@ -64,13 +64,13 @@ data = json.loads(json_str)
 ref = np.array(data[ELEMENT][0][FEATURE])
 print("ref size is {}".format(np.shape(ref)))
 
-with open("test_set.json") as f:
+with open("data/test_set.json") as f:
     json_str = f.read()
 
 testdata = json.loads(json_str)
 
 
-time_span = list(range(1,55))
+time_span = list(range(1,35))
 X = []
 y = []
 
@@ -78,7 +78,8 @@ X_test = []
 y_test = []
 
 def residual(measured, ref):
-    return (np.mean(measured[time_span], axis=0) - np.mean(ref[time_span], axis=0))
+    r = (np.mean(measured[time_span], axis=0) - np.mean(ref[time_span], axis=0))
+    return r
 
 #TODO:
 #
@@ -158,24 +159,35 @@ X_test = np.squeeze(X_test)
 # ce reprezinta axele
 # o mica discute in legatura cu algoritmii alesi
 pca = PCA(n_components=2)
-# perplex = [5, 30]
-# for p in perplex:
-#     # plot only for emitters in node 11 and 17
-#     tsne = t_sne.TSNE(perplexity=p)
-#     X_red = tsne.fit_transform(X)
-#     print(X_red.shape)
-#     plt.scatter(X_red[:,0], X_red[:, 1], c=y)
-#     plt.show()
+perplexity = 7
+tsne = t_sne.TSNE(perplexity=perplexity)
+X_red = tsne.fit_transform(X)
+flt_plots = []
+
+fault_nodes = [7, 11, 15, 22, 27]
+for node in fault_nodes:
+    X_1 = [X_red[n, 0] for n in range(len(X_red)) if y[n] == node]
+    X_2 = [X_red[n, 1] for n in range(len(X_red)) if y[n] == node]
+    fig = plt.scatter(X_1, X_2)
+    flt_plots.append(fig)
+
+leg = ["Fault in node {}".format(n) for n in fault_nodes]
+plt.legend(leg)
+plt.show()
+
+
 
 del data
 del testdata
 del json_str
 
 # network = nn(hidden_layer_sizes=(100,), activation='relu', warm_start=True, verbose=True)
-svm_rfe = SVC(kernel='linear',C=10.5,verbose=False, max_iter=-1)
-
-
-rfe = RFE(estimator=svm_rfe, n_features_to_select=1, step=1)
+svm_rfe = SVC(kernel='linear', C=10,verbose=False, max_iter=-1)
+# dt_rfe = DecisionTreeClassifier()
+# lr_rfe = LogisticRegression()
+# rf_rfe = RandomForestClassifier(n_estimators=10,)
+rfe = RFE(estimator=svm_rfe, n_features_to_select=1, step=1,
+          verbose=True)
 rfe.fit(X, y)
 print("RFE SVM score is", rfe.score(X_test, y_test))
 ranking = rfe.ranking_
