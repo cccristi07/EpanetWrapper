@@ -37,21 +37,21 @@ for i = 1:31
     sim_vals = get_emitter_vals(node_vals, emitter_val, i);
     measured_pressure = sim_vals.EN_PRESSURE;
     scores = abs_residual(ref_pressure, measured_pressure);
-    %rez = normc(scores);
+    rez = normc(scores);
     rez = mean(scores(2:25, :));
     rez = abs(rez);
     rez = (rez - min(rez))/(max(rez)-min(rez));
     R = [R rez'];
 end
 
-imshow(R')
+%imshow(R')
 R = R'; % consideram linia_i ca fiind rasp tuturor nodurilor la fault_i 
 
 %% constructie matrice binara M
 % fault detection via set covering problem
 % care sunt cele mai importante noduri pentru detectia fault-ului
 
-thr = 0.35;
+thr = 0.85;
 M = double(R > thr);
 alpha = binvar(size(M,2), 1);
 
@@ -64,4 +64,4 @@ optimize([M * alpha >=1], sum(alpha))
 alpha = value(alpha);
 sum(alpha); % numarul de noduri care algoritmul de optimizare numerica a selectat
 sum(M(alpha == 1, :),2) >= 1; % verif daca se indeplineste conditia de set covering
-find(alpha)
+sum(alpha)

@@ -16,36 +16,35 @@ emitter_test=[3 5 7 9 11 13 15 17 19 21 23 25 27 29 31 33];% test overflow
 
 sensors = {
  % nodes with sensors
- [12 15 17  21 26 27  29]
-[11 12]
-[4  12]
-[12  15  29]
-[9  12  15  30]
-[8   9  12  29  31]
-[8   9  10  12  24  31]
-[7   9  12  24  25  28  31]
-[7  12  24  25  26  28  29  31]
-[7  12  24  25  26  28  29  30  31]
-[14  15  23  24  25  26  28  29  30  31]
-
+[10, 11, 25, 27],
+[10, 11, 16, 25, 27, 28],
+[9, 10, 11, 12, 16, 20, 25, 27, 28, 29],
+[11, 15,21,28],
+[12,13,16,21,26,28],
+[6,12,13,14,15,16,21,26,27,28]
 };
 %% construiesc matricile de reziduuri
 H_train = [];
 H_test = [];
+H_test2 = [];
 R_train = [];
 R_test = [];
+R_test2 = [];
 
 nv_train = train_data.NODE_VALUES;
 nv_test = test_data.NODE_VALUES;
+nv_test2 = test2_data.NODE_VALUES;
+
+
 
 parts = {[1 2 3 4 16 17 18], [5 6 7 8 13 14 15], [9 10 11 12],  ...
    [19 20 21 22], [23 24 25 26 27 28 29 30 31]};
 
 p_ref = nv_train{1}.EN_PRESSURE;
-% date de antrenare
+%% date de antrenare
 for node = 1:31
     for emitter_val = 1:31
-        if mod(emitter_val, 2) == 1
+        if mod(emitter_val, 2) == 1 && nv_train{1}.EMITTER_VAL ~= 0
             sim_data = get_emitter_vals(nv_train, emitter_val, node);
             h = zeros(31, 1);
             h(node) = 1;
@@ -60,7 +59,7 @@ for node = 1:31
     end
 end
 
-% date de test
+%% date de test
 for node = 1:31
     for emitter_val = 1:31
         if mod(emitter_val, 2) == 0
@@ -77,10 +76,29 @@ for node = 1:31
         end
     end
 end
-
-
+%% date test strong
+for i = 1:length(nv_test)
+    
+    if nv_test{i}.EMITTER_VAL == 0
+        continue 
+    end
+    
+    sim_data = nv_test{i};
+    node = sim_data.EMITTER_NODE;
+    
+    h = zeros(31, 1);
+    h(node) = 1;
+    % matricea de labels
+    H_test2 = [H_test2, h];
+    sim_pressure = sim_data.EN_PRESSURE;
+    % absolute residual
+    rez = mean(sim_pressure(2:25,:)) - mean(p_ref(2:25, :));
+    rez = rez(:);
+    R_test2 = [R_test2, rez];
+end
 results = zeros(2,length(nsensors),2);
-
+H_test = H_test2;
+R_test = R_test2;
 %% Save junction labels
 H_train_junc = H_train;
 H_test_junc = H_test;
@@ -95,7 +113,7 @@ for isensors = 1:length(nsensors)
     sensor_nodes = sensors{isensors};
     disp(['Sensor Nodes: ' num2str(sort(sensor_nodes))]);
 
-    for class_parts = [0 1]
+    for class_parts = [0]
         disp(['class_parts=' num2str(class_parts)]);
 
         %% Build labels for subgraphs    
