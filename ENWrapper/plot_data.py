@@ -9,7 +9,7 @@ from sklearn.svm import NuSVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.neighbors import KNeighborsClassifier as KNN
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, DBSCAN
 from sklearn.manifold import t_sne
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
@@ -23,34 +23,7 @@ from scipy.io import savemat
 from sklearn.decomposition import MiniBatchDictionaryLearning, DictionaryLearning, NMF
 import pickle
 import matplotlib2tikz.save as tsave
-# TODO:
-# cplex, gurobi, mosek - programe implementate in C solvere - Python matlab etc.
 
-
-# pentru matlab - YALMIP
-
-# sa incerc sa plotez si sa clasific pentru un singur defect - s
-# a vad daca se poate face clar separatie intre defect si functionare normala
-
-# dict learning
-
-# codul pentru fault detection & <<fault isolation>>
-
-
-# ascending order of nodes - Neural Net
-#nodes = [6, 13, 29, 22,  5, 25, 26, 14, 12, 30,  4, 21, 24, 23,  7, 18, 27, 28,  8, 19, 20, 15,  3, 16,  9,  1,  2, 17, 10, 11,  0]
-
-# most important nodes
-# nodes = [1,  2, 17, 10, 11,  0]
-
-# # least important nodes
-# nodes = [2, 17, 10, 11, 0]
-
-
-# ascending order of nodes -SVM Linear
-
-# ma intereseaza sa fie clasificarea buna, nu neap raritatea dictionarului
-# X = D * V
 
 nodes = list(range(1,32))
 
@@ -68,6 +41,9 @@ S4 = {13, 14, 16, 15, 26,25,24, 31,30, 29}
 S5 = {9, 10, 11, 12}
 S = [{22, 23, 24, 27, 28, 29, 30, 31}, {1, 2, 3, 16, 17, 18, 19}, {20, 21}, {4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, {25, 26, 14, 15}]
 # S = [{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, {19, 22, 23, 24, 25, 27, 28, 29, 30, 31}, {14, 15, 16, 17, 18, 26}, {20, 21}]
+
+# utility function that calculates the residual
+
 def residual(measured, ref):
     r = (np.mean(measured[time_span], axis=0) - np.mean(ref[time_span], axis=0))
     return r
@@ -132,7 +108,8 @@ def get_data(train_path='data/train_set.json', test_path='data/test_set.json', e
                         break
             else:
                 y_train.append(val["EMITTER_NODE"])
-                mag_train.append(val["EMITTER_VAL"])
+
+        mag_train.append(val["EMITTER_VAL"])
 
     for val in test_data[ELEMENT][2:]:
         measured = np.array(val[FEATURE])
@@ -159,7 +136,7 @@ def get_data(train_path='data/train_set.json', test_path='data/test_set.json', e
                         break
             else:
                 y_test.append(val["EMITTER_NODE"])
-                mag_train.append(val["EMITTER_VAL"])
+        mag_test.append(val["EMITTER_VAL"])
 
     X_train = np.array(X_train)
     X_test = np.array(X_test)
@@ -242,6 +219,34 @@ def clf_comparison(clfs, X_train, y_train, X_test, y_test):
         score = clf.score(X_test, y_test)
         print("{} scored {} on test set".format(type(clf).__name__, score))
 
+def node_clustering(X_train, mag_train, alg=None, n_clusters=4):
+
+    if alg is None:
+        alg = KMeans(n_clusters=n_clusters)
+
+
+    X = [x for x, m in zip(X_train, mag_train) if m > 10]
+    mags = [m for m in mag_train if m > 10]
+
+    alg.fit(X)
+
+    labels = alg.labels_
+
+
+    clusters = [l for l, m in zip(labels, mags) if m == 25]
+
+
+    from collections import defaultdict
+
+    t = defaultdict(list)
+
+    for node, cluster in enumerate(clusters):
+        t[cluster+1].append(node+1)
+
+    return t
+
+
+
 
 def dl_classification(dl,X_train, y_train, X_test, y_test, H_train=None, H_test=None, n_comp=256, sparsity=4,):
 
@@ -277,7 +282,7 @@ param_grid = [
   {'C': [1, 5, 10, 15, 25, 50, 100, 1000], 'kernel': ['linear'], 'class_weight': ['balanced', None]},
   {'C': [1, 10, 15, 25, 50, 100, 1000], 'gamma': [0.001, 0.0001, 0.01, 0.00001], 'kernel': ['rbf'] , 'class_weight':['balanced', None]},
  ]
-X_train, y_train, X_test, y_test, mag_train, mag_test = get_data(time_span=time_span, load_pkl=True, reduce_singularities=False, partitioned=True)
+X_train, y_train, X_test, y_test, mag_train, mag_test = get_data(time_span=time_span, load_pkl=False, reduce_singularities=False, partitioned=False)
 # dim_reduction(X_train, y_train, fault_nodes=[3, 7, 11, 15, 17, 27, 28])
 # rf = RandomForestClassifier(n_estimators=10,)
 # ab = AdaBoostClassifier()
@@ -288,9 +293,11 @@ X_train, y_train, X_test, y_test, mag_train, mag_test = get_data(time_span=time_
 clf_grid_search(SVC(), X_train, y_train, X_test, y_test, param_grid)
 
 
-svm_rfe = SVC(kernel='linear', C=15, class_weight='balanced')
+svm_rfe = SVC(kernel='linear', C=1500, class_weight='balanced')
 
 rfe_scores(svm_rfe, X_train, y_train, X_test, y_test, n_nodes=None)
+
+node_clustering(X_train, mag_train, DBSCAN())
 
 
 # testing for MSC sensors

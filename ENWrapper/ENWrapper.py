@@ -119,7 +119,7 @@ class ENSim(EPANetSimulation):
             simulation_type: "H" or "Q"
             emitter_values : [ (node_index, emitter_value) ]
             query : {
-                nodes : [ "EN_PRESSURE"
+                nodes : [ "EN_PRESSURE", "EN_DEMAND"
                 ]
                 links : [ "EN_VELOCITY"
                 ]
@@ -344,57 +344,9 @@ class EpanetError(Exception):
         super().__init__(err_msg)
 
 
-def run_simulation(network, pdd, query_dict):
 
-    es = EPANetSimulation(network, pdd)
-
-    print("Running {}".format(query_dict["simulation_name"]))
-    ret_vals = []
-
-    print(query_dict)
-    for emitter, emitter_val in query_dict["emitter_values"]:
-        print("for node {} simulating emitter_Val {}".format(emitter, emitter_val))
-
-        # modify current network and and save inp temp file
-
-        es.ENsetnodevalue(emitter, EN_EMITTER, emitter_val)
-
-        es.ENsaveinpfile("temp.inp")
-        print(es.ENsetnodevalue(emitter, EN_EMITTER, 0))
-
-        e2 = EPANetSimulation("temp.inp", pdd)
-        e2.ENsetnodevalue(emitter,EN_EMITTER,emitter_val)
-
-        e2.run()
-
-        node_vals = {}
-        link_vals = {}
-        for node_query in query_dict["query"]["nodes"]:
-            node_vals[node_query] = []
-
-        for link_query in query_dict["query"]["links"]:
-            link_vals[link_query] = []
-
-        for node_query in query_dict["query"]["nodes"]:
-            for node in e2.network.nodes:
-                node_vals[node_query].append(e2.network.nodes[node].results[eval(node_query)])
-
-        for link_query in query_dict["query"]["links"]:
-            for link in e2.network.links:
-                link_vals[link_query].append(e2.network.links[link].results[eval(link_query)])
-
-
-        ret_vals.append({
-            "EMITTER_VAL" : emitter_val,
-            "EMITTER_NODE" : emitter,
-            "NODE_VALS" : np.transpose(node_vals).tolist(),
-            "LINK_VALS" : np.transpose(link_vals).tolist()
-        })
-    return ret_vals
-
-#TODO metoda pentru modificarea demand-ului pe nod!!!
 if __name__ == '__main__':
-    es = ENSim('data/canaris.inp', pdd=False)
+    es = ENSim('data/hanoi.inp', pdd=False)
 
     test_vals = [val for val in range(32) if val % 2 == 0]
     train_vals = [val for val in range(32) if val % 2 == 1]
@@ -458,11 +410,9 @@ if __name__ == '__main__':
 
     }
 
-    # data_train = es.query_network(train_dataset)
-    # es.save_data("train_set.json")
-    # data_test = es.query_network(test_dataset)
-    # es.save_data("test_set.json")
-    # data_test2 = es.query_network(test2_dataset)
-    # es.save_data("test2_set.json")
-    es.query_network(demand_test)
-    es.save_data("canaris_trial.json")
+    data_train = es.query_network(train_dataset)
+    es.save_data("train_set.json")
+    data_test = es.query_network(test_dataset)
+    es.save_data("test_set.json")
+    data_test2 = es.query_network(test2_dataset)
+    es.save_data("test2_set.json")

@@ -8,16 +8,15 @@ from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 from sklearn.neural_network import MLPClassifier
 
 
-inp_file = 'data/hanoi.inp'
+inp_file = 'data/large_net.inp'
 
 wn = wntr.network.WaterNetworkModel(inp_file)
-# wntr.graphics.plot_network(wn, title=wn.name)
+wntr.graphics.plot_network(wn, title=wn.name)
 sim = wntr.sim.EpanetSimulator(wn)
 results = sim.run_sim()
 pressure = results.node["pressure"]
 plt.plot(pressure)
 plt.show()
-
 # add a leak to a node
 
 wn.split_pipe('7', '7_B', '7_leak_node')
