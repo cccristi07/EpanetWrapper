@@ -43,7 +43,6 @@ S = [{22, 23, 24, 27, 28, 29, 30, 31}, {1, 2, 3, 16, 17, 18, 19}, {20, 21}, {4, 
 # S = [{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, {19, 22, 23, 24, 25, 27, 28, 29, 30, 31}, {14, 15, 16, 17, 18, 26}, {20, 21}]
 
 # utility function that calculates the residual
-
 def residual(measured, ref):
     r = (np.mean(measured[time_span], axis=0) - np.mean(ref[time_span], axis=0))
     return r
@@ -283,13 +282,13 @@ param_grid = [
   {'C': [1, 10, 15, 25, 50, 100, 1000], 'gamma': [0.001, 0.0001, 0.01, 0.00001], 'kernel': ['rbf'] , 'class_weight':['balanced', None]},
  ]
 X_train, y_train, X_test, y_test, mag_train, mag_test = get_data(time_span=time_span, load_pkl=False, reduce_singularities=False, partitioned=False)
-# dim_reduction(X_train, y_train, fault_nodes=[3, 7, 11, 15, 17, 27, 28])
-# rf = RandomForestClassifier(n_estimators=10,)
-# ab = AdaBoostClassifier()
-# gb = GradientBoostingClassifier()
-# dt = DecisionTreeClassifier()
-# clfs = [rf, ab, gb, dt]
-# clf_comparison(clfs, X_train, y_train, X_test, y_test)
+dim_reduction(X_train, y_train, fault_nodes=[3, 7, 11, 15, 17, 27, 28])
+rf = RandomForestClassifier(n_estimators=10,)
+ab = AdaBoostClassifier()
+gb = GradientBoostingClassifier()
+dt = DecisionTreeClassifier()
+clfs = [rf, ab, gb, dt]
+clf_comparison(clfs, X_train, y_train, X_test, y_test)
 clf_grid_search(SVC(), X_train, y_train, X_test, y_test, param_grid)
 
 
@@ -301,7 +300,6 @@ node_clustering(X_train, mag_train, DBSCAN())
 
 
 # testing for MSC sensors
-
 MSC = [[11, 15,21,28],
 [12,13,16,21,26,28],
 [6,12,13,14,15,16,21,26,27,28]]
@@ -314,122 +312,3 @@ for m in MSC:
     svm.fit(X, y_train)
 
     print(svm.score(X_test[:, m], y_test))
-
-
-
-
-
-
-# # dl1 = DictionaryLearning()
-# # Xd = dl.fit_transform(X_train, )
-# # Xd_test = dl.transform(X_test)
-# # D = dl.components_
-# # print(D.shape)
-#
-# feature_names = ["node" + str(no) for no in range(0, 31)]
-#
-# def f_importances(coef, names):
-#     imp = coef
-#     imp,names = zip(*sorted(zip(imp,names)))
-#     plt.barh(range(len(names)), imp, align='center')
-#     plt.yticks(range(len(names)), names)
-#     plt.show()
-#
-#
-#
-# print("SVM_DL Score is", svm.score(Xd_test, y_test))
-# print("RF_DL score is ", rf.score(Xd_test, y_test))
-# print("GB_DL score is", gb.score(Xd_test, y_test))
-# print("AB_DL score is", ab.score(Xd_test, y_test))
-# print("DT_DL score is", dt.score(Xd_test, y_test))
-# # TODO add dictionary learning method
-# # TODO set covering problem
-#
-#
-#
-# #min alpha*|| H - W*X || + ||Ri - D*x||
-#
-# import matplotlib.pyplot as plt
-#
-#
-# def make_meshgrid(x, y, h=.02):
-#     """Create a mesh of points to plot in
-#
-#     Parameters
-#     ----------
-#     x: data to base x-axis meshgrid on
-#     y: data to base y-axis meshgrid on
-#     h: stepsize for meshgrid, optional
-#
-#     Returns
-#     -------
-#     xx, yy : ndarray
-#     """
-#     x_min, x_max = x.min() - 1, x.max() + 1
-#     y_min, y_max = y.min() - 1, y.max() + 1
-#     xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
-#                          np.arange(y_min, y_max, h))
-#     return xx, yy
-#
-#
-# def plot_contours(ax, clf, xx, yy, **params):
-#     """Plot the decision boundaries for a classifier.
-#
-#     Parameters
-#     ----------
-#     ax: matplotlib axes object
-#     clf: a classifier
-#     xx: meshgrid ndarray
-#     yy: meshgrid ndarray
-#     params: dictionary of params to pass to contourf, optional
-#     """
-#     Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
-#     Z = Z.reshape(xx.shape)
-#     out = ax.contourf(xx, yy, Z, **params)
-#     return out
-#
-#
-#
-# # Take the first two features. We could avoid this by using a two-dim dataset
-# X_tsne = normalize(np.array(X_tsne))
-# y_tsne = y_tsne
-#
-# # we create an instance of SVM and fit out data. We do not scale our
-# # data since we want to plot the support vectors
-# C = 1.0  # SVM regularization parameter
-# clf = SVC(kernel='linear', C=10)
-# clf.fit(X_tsne, y_tsne)
-#
-# levels = sorted(list(set(y_tsne)))
-# # Set-up 2x2 grid for plotting.
-# fig, ax = plt.subplots()
-#
-# X0, X1 = X_tsne[:, 0], X_tsne[:, 1]
-# xx, yy = make_meshgrid(X0, X1)
-#
-# Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
-# Z = Z.reshape(xx.shape)
-# plt.contourf(xx, yy, Z)
-# b_plots = []
-# y_node
-# for node in fault_nodes:
-#     y_node.append(node)
-#     X_1 = [X_tsne[n, 0] for n in range(len(X_tsne)) if y_tsne[n] == node]
-#     X_2 = [X_tsne[n, 1] for n in range(len(X_tsne)) if y_tsne[n] == node]
-#     fig = plt.scatter(X_1, X_2)
-#     flt_plots.append(fig)
-# plt.legend(['a', 'b','c','d'])
-#
-#
-# # plt.scatter(X0[:], X1[:], c=y_tsne, s=20, edgecolors='k')
-# # plt.scatter(X0[17:33], X1[17:33], s=20, edgecolors='k')
-# # plt.scatter(X0, X1, c=y_tsne, s=20, edgecolors='k')
-# # plt.scatter(X0, X1, c=y_tsne, s=20, edgecolors='k')
-#
-# # plt.set_xlim(xx.min(), xx.max())
-# # plt.set_ylim(yy.min(), yy.max())
-# plt.xlabel('x1 tsne')
-# plt.ylabel('x2 tsne')
-# # plt.show()
-#
-# #min alpha*|| H - W*X || + ||Ri - D*x||
