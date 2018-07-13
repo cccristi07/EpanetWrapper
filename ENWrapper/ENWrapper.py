@@ -346,14 +346,17 @@ class EpanetError(Exception):
 
 
 if __name__ == '__main__':
+
+
+
     es = ENSim('data/hanoi.inp', pdd=False)
 
     test_vals = [val for val in range(32) if val % 2 == 0]
     train_vals = [val for val in range(32) if val % 2 == 1]
-
+ 
 
     intense_leak = [35, 40, 50, 60, 100]
-    leak = [55]
+    leak = [100]
 
     nodes = list(range(1, 32))
 
