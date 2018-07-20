@@ -21,23 +21,41 @@ class ENSim(EPANetSimulation):
         super().__init__(network_file, pdd)
 
     def set_emitter(self, node_index, emitter_val):
+        """
+            utility method used to modify the emitter value in a node
+        """
         if self.network.nodes[node_index].node_type is EN_JUNCTION:
             ENSim._getncheck(self.ENsetnodevalue(node_index, EN_EMITTER, emitter_val))
 
     def set_basedemand(self, node_index, base_demand_val):
+        """
+            utiliy method used to modify the base demand for each node (see
+            documentation for details about the meaning of demand and
+            basedemand
+        """
         if self.network.nodes[node_index].node_type is EN_JUNCTION:
             ENSim._getncheck(self.ENsetnodevalue(node_index, EN_BASEDEMAND, base_demand_val))
 
     def set_demand(self, node_index, demand_val):
+        """
+        utility method used to modify the demand for a node
+        """
         if self.network.nodes[node_index].node_type is EN_JUNCTION:
             ENSim._getncheck(self.ENsetnodevalue(node_index, EN_DEMAND, demand_val))
 
     def set_pattern(self, node_index, patter_id):
+        """
+        utility function that sets the multiplicities for a demand (see EPANET
+        documentation)
+        """
         if self.network.nodes[node_index].node_type is EN_JUNCTION:
             ENSim._getncheck(self.ENsetnodevalue(node_index, EN_PATTERN, patter_id))
 
     def set_emitters(self, emitter_info=None):
-
+        """
+            utility method that sets modifies modifies multiple nodes emitter
+            vals
+        """
         if emitter_info is None:
             # if arg is none reset emitter values
             for node_index in self.network.nodes:
